@@ -1,0 +1,80 @@
+# ОС и проводник
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+._*
+
+# Редакторы
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# Временные файлы и логи
+*.log
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+*.pid
+*.seed
+*.stackdump
+tmp/
+temp/
+.cache/
+screenshots/
+qa-output/
+coverage/
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.ipynb_checkpoints/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.next/
+.nuxt/
+dist/
+build/
+out/
+.parcel-cache/
+.turbo/
+.eslintcache
+
+# Секреты и локальные настройки
+.env
+.env.*
+!.env.example
+*.local
+*.secret
+secrets/
+
+# Агентские и локальные служебные папки
+.opencode/
+.claude/
+.cursor/
+.aider*
+.continue/
+.agent/
