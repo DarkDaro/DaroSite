@@ -34,7 +34,7 @@ function checkCounts(site) {
     corporations: 7,
     implants: 8,
     weapons: 7,
-    glossary: 10,
+    glossary: 16,
     gallery: 39
   };
   for (const [key, value] of Object.entries(expected)) {
