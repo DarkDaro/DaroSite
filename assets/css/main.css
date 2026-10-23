@@ -3137,3 +3137,116 @@ body::after {
   .world-cat h3 { font-size: clamp(16px, 4.6vw, 19px); overflow-wrap: anywhere; }
   .world-cat .meta { font-size: 9px; line-height: 1.45; }
 }
+
+
+/* Второй визуальный проход: параллакс, переходы, галерея, прогресс. 24.10 */
+
+@supports (animation-timeline: scroll()) {
+  .cover-image img {
+    transform-origin: center center;
+    animation: coverParallax linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 72vh;
+    will-change: transform;
+  }
+}
+
+@keyframes coverParallax {
+  from { transform: scale(1.04) translateY(-1.2%); }
+  to { transform: scale(1.08) translateY(2.4%); }
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: pageOut 0.18s ease both;
+}
+
+::view-transition-new(root) {
+  animation: pageIn 0.34s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes pageOut {
+  to { opacity: 0; transform: translateY(6px); }
+}
+
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .gallery-item {
+    animation: galleryFade 0.55s var(--ease) both;
+  }
+  .gallery-item:nth-child(2n) { animation-delay: 0.04s; }
+  .gallery-item:nth-child(3n) { animation-delay: 0.08s; }
+  .gallery-item:nth-child(4n) { animation-delay: 0.12s; }
+}
+
+@keyframes galleryFade {
+  from { opacity: 0.2; }
+  to { opacity: 1; }
+}
+
+#site-header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+}
+#site-header .site-header {
+  position: relative;
+  top: auto;
+}
+
+.reader-progress {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 35;
+  width: min(100% - (2 * var(--pad)), var(--maxw));
+  height: 3px;
+  margin-inline: auto;
+  background: var(--ink);
+}
+.reader-progress span {
+  position: relative;
+  transition: width 0.12s linear;
+}
+.reader-progress span::after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 12px var(--lime), 0 0 24px rgba(95, 251, 241, 0.7);
+  transform: translateY(-50%);
+}
+#reader-progress-label {
+  color: var(--lime);
+  min-width: 3.5ch;
+  text-align: right;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cover-image img,
+  .gallery-item {
+    animation: none;
+  }
+  .reader-progress span {
+    transition: none;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
+@media (max-width: 680px) {
+  .cover-image img {
+    animation-range: 0 48vh;
+  }
+}

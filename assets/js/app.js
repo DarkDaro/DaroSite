@@ -386,8 +386,8 @@
       : '<div class="empty"><h3>Глава в работе</h3><p>' + esc(chapter.synopsis || "Синопсис пока не написан.") + "</p><p class=\"mt-16\">Полный текст пока доступен только для главы 1. Остальные главы открыты как карточки с синопсисом.</p><div class=\"actions\"><a class=\"link-arrow\" href=\"chapter.html?n=1\">Глава 1</a><a class=\"link-arrow\" href=\"book.html#contents\">К содержанию</a></div></div>";
 
     main.innerHTML = '<header class="reader-head"><div class="wrap"><p class="chapter-no">' + esc(part.title) + " / глава " + chapter.n + '</p><h1>' + esc(chapter.title) + '</h1><p class="meta">' + esc(chapter.status) + " / " + (full ? textWords(text) + " слов / " + readingTime(text) + " мин" : "синопсис") + " / демонстрационный текст</p></div></header>" +
-      '<div class="wrap"><div class="reader-tools"><div class="tool-field"><label>Шрифт</label><button type="button" class="font-step" data-font="-1" aria-label="Уменьшить шрифт">A-</button><button type="button" class="font-step" data-font="1" aria-label="Увеличить шрифт">A+</button></div><div class="tool-field"><label>Текст</label><span class="mono">' + (full ? "полный" : "синопсис") + '</span></div><button type="button" class="filter-toggle" data-print>Печать</button><div class="toolbar-spacer"></div><a class="link-quiet" href="book.html#contents">К содержанию</a></div>' +
-      '<div class="reader-progress" aria-hidden="true"><span id="reader-progress-bar"></span></div></div>' +
+      '<div class="wrap"><div class="reader-tools"><div class="tool-field"><label>Шрифт</label><button type="button" class="font-step" data-font="-1" aria-label="Уменьшить шрифт">A-</button><button type="button" class="font-step" data-font="1" aria-label="Увеличить шрифт">A+</button></div><div class="tool-field"><label>Текст</label><span class="mono">' + (full ? "полный" : "синопсис") + '</span></div><div class="tool-field"><label>Прогресс</label><span class="mono" id="reader-progress-label">0%</span></div><button type="button" class="filter-toggle" data-print>Печать</button><div class="toolbar-spacer"></div><a class="link-quiet" href="book.html#contents">К содержанию</a></div>' +
+      '</div><div class="reader-progress" aria-hidden="true"><span id="reader-progress-bar"></span></div>' +
       '<div class="wrap reader-layout"><div>' + body + '<nav class="reader-nav">' + (prev ? '<a class="link-arrow" href="' + U.chapterUrl(prev.n) + '">' + pad(prev.n) + " / " + esc(prev.title) + "</a>" : "<span></span>") + (next ? '<a class="link-arrow" href="' + U.chapterUrl(next.n) + '">' + pad(next.n) + " / " + esc(next.title) + "</a>" : "<span></span>") + "</nav></div>" +
       '<aside class="reader-notes"><p class="eyebrow">пометки</p>' + (notes.length ? notes.map(function (note) { return '<div class="note-item"><span class="note-no">' + esc(note.type) + '</span><p><a class="link" href="' + note.href + '">' + esc(note.title) + "</a></p></div>"; }).join("") : '<p class="meta mt-16">К этой главе нет отдельных пометок.</p>') + '<p class="seam">' + esc(chapter.seam || SITE.seams.book) + "</p></aside></div>" +
       seamBlock(SITE.seams.book);
@@ -413,10 +413,13 @@
     if (printButton) printButton.addEventListener("click", function () { window.print(); });
 
     var bar = document.getElementById("reader-progress-bar");
+    var progressLabel = document.getElementById("reader-progress-label");
     function progress() {
       if (!bar) return;
       var height = document.documentElement.scrollHeight - window.innerHeight;
-      bar.style.width = (height > 0 ? Math.min(100, (window.scrollY / height) * 100) : 0) + "%";
+      var value = height > 0 ? Math.min(100, (window.scrollY / height) * 100) : 0;
+      bar.style.width = value + "%";
+      if (progressLabel) progressLabel.textContent = Math.round(value) + "%";
     }
     progress();
     window.addEventListener("scroll", progress, { passive: true });
