@@ -8,8 +8,11 @@
   },
   "scripts": {
     "serve": "node tools/serve.mjs",
+    "quick": "node tools/check.mjs && node tools/quick.mjs",
     "check": "node tools/check.mjs",
     "qa": "node tools/qa.mjs",
-    "test": "npm run check && npm run qa"
+    "mobile": "node tools/mobile.mjs",
+    "interactions": "node tools/interactions.mjs",
+    "test": "npm run check && npm run qa && npm run mobile && npm run interactions"
   }
 }

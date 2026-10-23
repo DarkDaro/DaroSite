@@ -436,6 +436,11 @@
       { label: "Вооружение", href: "weapons.html", count: SITE.weapons.length, num: "05", note: "служебное и кустарное" }
     ];
     var featured = ["upper-tier", "wet-quarter", "station-zero"].map(findLocation).filter(Boolean);
+    var crossList = ["upper-tier", "wet-quarter", "station-zero", "glass-dam", "weave"].map(function (id) {
+      var location = findLocation(id);
+      if (!location) return "";
+      return '<a href="' + U.dossierUrl(id) + '"><span>' + esc(location.name) + '</span><span class="meta">' + esc(location.tier) + "</span></a>";
+    }).join("");
 
     main.innerHTML = pageHead("Мир / Кассий", "Разрез города", "Кассий стоит на дамбе и соляных полях. Верхний ярус дышит отдельно, нижний платит за фильтры, а между ними лежит слой, который город называет порядком.", ["5 ярусов", "10 локаций", "7 организаций"]) +
       '<section class="section--tight"><div class="wrap"><div class="cross-section">' +
@@ -468,6 +473,7 @@
           '<path d="M182 260 H70 V340 H24" class="cs-line"/><a href="dossier.html?id=glass-dam"><text x="24" y="344" class="cs-label">СТЕКЛЯННАЯ ДАМБА</text></a>' +
           '<a href="dossier.html?id=weave"><text x="24" y="520" class="cs-label">ПОЛОТНО / НЕОН</text></a><text x="980" y="520" class="cs-label cs-label--amber">КАРАНТИН Z-9</text>' +
         "</svg></div>" +
+        '<div class="cross-list" aria-label="Локации на разрезе города">' + crossList + "</div>" +
         '<p class="meta mt-16">Схема не в масштабе. Пять слоёв: море, дамба, верхний ярус, нижний город и Полотно.</p></div></section>' +
       '<section class="section"><div class="wrap">' + sectionHead("01 / каталоги", "Что описано в архиве") +
         '<div class="world-cats">' + cats.map(function (item) {

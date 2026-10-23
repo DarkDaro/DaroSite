@@ -3250,3 +3250,157 @@ body::after {
     animation-range: 0 48vh;
   }
 }
+
+
+/* Мобильный адаптив: тап-зоны и компактная шапка. 24.10 */
+
+@media (max-width: 900px) {
+  .brand {
+    min-height: 40px;
+    align-items: center;
+  }
+  .header-tools { gap: 6px; }
+  .search-open,
+  .layer-toggle,
+  .menu-toggle {
+    min-width: 38px;
+    min-height: 38px;
+    justify-content: center;
+  }
+  .menu-toggle {
+    width: 38px;
+    height: 38px;
+  }
+  .link-arrow { min-height: 40px; }
+  .filter-toggle { min-height: 38px; }
+}
+
+@media (max-width: 380px) {
+  .brand-mark { font-size: 13px; }
+  .header-tools { gap: 5px; }
+}
+
+@media (max-width: 360px) {
+  :root { --pad: 14px; }
+  .brand-mark { font-size: 11px; }
+  .search-open,
+  .layer-toggle,
+  .menu-toggle {
+    min-width: 36px;
+    min-height: 36px;
+  }
+  .header-tools { gap: 4px; }
+}
+
+
+@media (max-width: 900px) {
+  .footer-grid a {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+  }
+}
+
+
+/* Мобильный адаптив: элементы управления и карта мира. 24.10 */
+
+.cross-list { display: none; }
+
+@media (max-width: 900px) {
+  .font-step {
+    min-width: 38px;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .reader-tools .link-quiet,
+  .note-item .link,
+  .glossary-item .link-quiet,
+  .crumbs a {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .tool-field input,
+  .tool-field select,
+  .toolbar select {
+    min-height: 36px;
+  }
+  .chip { min-height: 38px; }
+  .view-toggle button { min-height: 38px; }
+
+  .cross-section { display: none; }
+  .cross-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-top: 1px solid var(--line);
+    margin-bottom: 8px;
+  }
+  .cross-list a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 44px;
+    padding: 0 4px;
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+  }
+  .cross-list a .meta {
+    font-size: 9px;
+    color: var(--fog);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .cross-list a:hover .meta { color: var(--lime); }
+}
+
+
+/* Мобильный адаптив: таблицы, фильтры, крошки. 24.10 */
+
+@media (max-width: 900px) {
+  .filter-actions [data-reset] {
+    min-height: 38px;
+    padding: 0 8px;
+  }
+  table.data th button {
+    min-height: 38px;
+    padding: 4px 0;
+  }
+  table.data td.name a {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+  }
+  table.data td .link-quiet {
+    min-width: 32px;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .credit-row .link-quiet {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .glossary-item .link-quiet {
+    min-width: 40px;
+  }
+  .crumbs a {
+    min-width: 36px;
+  }
+  .id-table a {
+    min-width: 36px;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+
+@media (max-width: 900px) {
+  table.data th button { min-width: 36px; }
+}
