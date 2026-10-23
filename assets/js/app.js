@@ -333,7 +333,7 @@
       ["Статус", "издан"]
     ].map(function (row) { return "<tr><th>" + esc(row[0]) + "</th><td>" + esc(row[1]) + "</td></tr>"; }).join("");
 
-    var excerpt = SITE.chapters[0].text ? paragraphs(SITE.chapters[0].text.split(/\n\s*\n/).slice(0, 3).join("\n\n")) : '<p class="meta">Глава 1 в работе. Синопсис доступен в содержании.</p>';
+    var excerpt = SITE.chapters[0].text ? paragraphs(SITE.chapters[0].text.split(/\n\s*\n/).slice(0, 3).join("\n\n")) : '<p class="meta">Глава 1 доступна полностью. Остальные главы открыты как фабулы.</p>';
 
     var documents = SITE.documents.map(function (doc) {
       return '<article class="document-card"><div class="document-meta"><span class="eyebrow">' + esc(doc.label) + '</span><span class="meta">' + esc(doc.date) + '</span></div><h3>' + esc(doc.title) + '</h3><p>' + esc(doc.text) + '</p><a class="link-quiet" href="' + U.chapterUrl(doc.chapter) + '">Глава ' + doc.chapter + "</a></article>";
@@ -344,7 +344,7 @@
         '<div class="book-hero-body"><p class="eyebrow">издание</p><h2>Роман в трёх частях</h2><p class="lead">Город на дамбе, «Соль-7» и женщина, которая подписала собственный приговор.</p>' +
         '<div class="book-actions"><a class="link-arrow" href="chapter.html?n=1">Читать главу 1</a><a class="link-arrow" href="#contents">Содержание</a><a class="link-arrow" href="library.html">Библиотека</a></div>' +
         '<div class="book-facts">' + [
-          ["Автор", SITE.meta.author], ["Год", SITE.meta.year], ["Объём", "34 главы"], ["Части", "3"], ["Город", SITE.meta.city], ["Доступно", "1 глава полностью"]
+          ["Автор", SITE.meta.author], ["Год", SITE.meta.year], ["Объём", "34 главы"], ["Части", "3"], ["Город", SITE.meta.city], ["Доступно", "1 из 4 глав"]
         ].map(function (row) { return '<div class="book-fact"><span class="meta">' + esc(row[0]) + '</span><span class="book-fact-value">' + esc(row[1]) + "</span></div>"; }).join("") + "</div></div></div></section>" +
       '<section class="section"><div class="wrap">' + sectionHead("01 / аннотация", "О чём эта книга") +
         '<div class="card-grid card-grid--3">' + SITE.meta.blocks.map(function (block) { return infoCard(block.title, block.text); }).join("") + "</div></div></section>" +
