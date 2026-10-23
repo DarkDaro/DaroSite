@@ -78,3 +78,6 @@ secrets/
 .aider*
 .continue/
 .agent/
+
+# Локальный архив проекта, не версионируется
+archive/

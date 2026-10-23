@@ -1,0 +1,15 @@
+{
+  "name": "solyanoy-protocol",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Локальный артбук-архив романа «Соляной протокол»",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "serve": "node tools/serve.mjs",
+    "check": "node tools/check.mjs",
+    "qa": "node tools/qa.mjs",
+    "test": "npm run check && npm run qa"
+  }
+}
