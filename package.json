@@ -10,9 +10,15 @@
     "serve": "node tools/serve.mjs",
     "quick": "node tools/check.mjs && node tools/quick.mjs",
     "check": "node tools/check.mjs",
+    "content": "node tools/content.mjs",
+    "html": "node tools/html.mjs",
+    "assets": "node tools/assets.mjs",
+    "crawl": "node tools/crawl.mjs",
+    "shot": "node tools/shot.mjs",
     "qa": "node tools/qa.mjs",
     "mobile": "node tools/mobile.mjs",
     "interactions": "node tools/interactions.mjs",
+    "audit": "npm run content && npm run html && npm run assets && npm run crawl",
     "test": "npm run check && npm run qa && npm run mobile && npm run interactions"
   }
 }

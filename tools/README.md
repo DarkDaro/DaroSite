@@ -30,11 +30,17 @@ npm test
 | Команда | Что делает |
 |---|---|
 | `npm run serve` | Локальный сервер на `http://127.0.0.1:8765/` |
+| `npm run quick` | Быстрый smoke-тест |
 | `npm run check` | Проверка данных и синтаксиса |
+| `npm run content` | Разбор контента, JSON и CSV по главам |
+| `npm run html` | Аудит HTML-оболочек через `cheerio` |
+| `npm run assets` | Аудит WebP через `sharp` |
+| `npm run crawl` | Обход внутренних ссылок и поиск 404 |
+| `npm run shot -- /index.html 390` | Скриншот маршрута |
 | `npm run qa` | 18 маршрутов, desktop и mobile |
 | `npm run mobile` | 5 ширин экрана, 90 проверок |
 | `npm run interactions` | 11 интерактивных проверок |
-| `npm run quick` | Быстрый smoke-тест |
+| `npm run audit` | Контент, HTML, ассеты и обход ссылок |
 
 ## Файлы
 
@@ -44,6 +50,11 @@ npm test
 | `serve.mjs` | Запуск сервера на порту 8765 |
 | `global.mjs` | Подключение глобальных пакетов Node |
 | `check.mjs` | Проверка `data.js`, ссылок и ассетов |
+| `content.mjs` | Разбор контента и экспорт JSON/CSV |
+| `html.mjs` | Аудит HTML через `cheerio` |
+| `assets.mjs` | Аудит изображений через `sharp` |
+| `crawl.mjs` | Обход ссылок через Playwright |
+| `shot.mjs` | Скриншот маршрута |
 | `qa.mjs` | Полный QA по маршрутам |
 | `mobile.mjs` | Мобильный адаптив и тап-зоны |
 | `interactions.mjs` | Интерактив в мобильном размере |
@@ -52,9 +63,15 @@ npm test
 Отчёты пишутся в `%TEMP%`:
 
 - `solyanoy-quick-report.json`
+- `solyanoy-content-report.json`
+- `solyanoy-chapters.csv`
+- `solyanoy-html-report.json`
+- `solyanoy-assets-report.json`
+- `solyanoy-crawl-report.json`
 - `solyanoy-qa-report.json`
 - `solyanoy-mobile-report.json`
 - `solyanoy-interactions-report.json`
+- `solyanoy-shot-*.png`
 
 ## Правила
 

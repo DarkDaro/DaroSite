@@ -12,6 +12,10 @@ Module._initPaths();
 
 const require = createRequire(import.meta.url);
 
+export function loadPackage(name) {
+  return require(name);
+}
+
 export async function loadPlaywright() {
   return require("playwright");
 }
