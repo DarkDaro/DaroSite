@@ -57,6 +57,7 @@ function main() {
     day: chapter.day,
     status: chapter.status,
     words: words(chapter.text),
+    beats: Array.isArray(chapter.beats) ? chapter.beats.length : 0,
     synopsisChars: String(chapter.synopsis || "").length,
     synopsis: chapter.synopsis || ""
   }));
@@ -64,6 +65,7 @@ function main() {
   for (const chapter of site.chapters) {
     if (!chapter.title) issues.push("chapter " + chapter.n + ": no title");
     if (!chapter.synopsis) issues.push("chapter " + chapter.n + ": no synopsis");
+    if (!Array.isArray(chapter.beats) || chapter.beats.length !== 3) issues.push("chapter " + chapter.n + ": expected 3 beats");
     if (!chapter.pov) issues.push("chapter " + chapter.n + ": no POV");
     if (chapter.day === undefined || chapter.day === null) issues.push("chapter " + chapter.n + ": no day");
     if (chapter.n === 1 && !chapter.text) issues.push("chapter 1: no text");
@@ -98,6 +100,8 @@ function main() {
       parts: site.parts.length,
       chapters: site.chapters.length,
       fullChapters: site.chapters.filter((chapter) => chapter.text).length,
+      documents: site.documents.length,
+      timeline: site.timeline.length,
       characters: site.characters.length,
       locations: site.locations.length,
       corporations: site.corporations.length,

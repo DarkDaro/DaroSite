@@ -29,6 +29,8 @@ function readSite() {
 function checkCounts(site) {
   const expected = {
     chapters: 34,
+    documents: 4,
+    timeline: 8,
     characters: 10,
     locations: 10,
     corporations: 7,
@@ -52,6 +54,13 @@ function checkChapters(site) {
     if (chapter.n >= 1 && chapter.n <= 11 && chapter.part !== 1) issues.push("chapter " + chapter.n + ": wrong part");
     if (chapter.n >= 12 && chapter.n <= 23 && chapter.part !== 2) issues.push("chapter " + chapter.n + ": wrong part");
     if (chapter.n >= 24 && chapter.n <= 34 && chapter.part !== 3) issues.push("chapter " + chapter.n + ": wrong part");
+    if (!Array.isArray(chapter.beats) || chapter.beats.length !== 3) issues.push("chapter " + chapter.n + ": expected 3 beats");
+  }
+  for (const doc of site.documents) {
+    if (!doc.title || !doc.text || !doc.chapter) issues.push("document " + doc.id + ": incomplete");
+  }
+  for (const item of site.timeline) {
+    if (!item.day || !item.title || !item.text || !item.chapter) issues.push("timeline " + item.day + ": incomplete");
   }
   const first = site.chapters.find((chapter) => chapter.n === 1);
   if (first && first.text) {

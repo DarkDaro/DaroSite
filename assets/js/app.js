@@ -335,6 +335,10 @@
 
     var excerpt = SITE.chapters[0].text ? paragraphs(SITE.chapters[0].text.split(/\n\s*\n/).slice(0, 3).join("\n\n")) : '<p class="meta">Глава 1 в работе. Синопсис доступен в содержании.</p>';
 
+    var documents = SITE.documents.map(function (doc) {
+      return '<article class="document-card"><div class="document-meta"><span class="eyebrow">' + esc(doc.label) + '</span><span class="meta">' + esc(doc.date) + '</span></div><h3>' + esc(doc.title) + '</h3><p>' + esc(doc.text) + '</p><a class="link-quiet" href="' + U.chapterUrl(doc.chapter) + '">Глава ' + doc.chapter + "</a></article>";
+    }).join("");
+
     main.innerHTML = pageHead("Роман / 2026", "Соляной протокол", SITE.meta.annotation, ["Илья Верес", "34 главы", "три части", "демонстрационный материал"]) +
       '<section class="section--tight"><div class="wrap book-hero"><div class="book-hero-cover">' + U.cover("sol") + "</div>" +
         '<div class="book-hero-body"><p class="eyebrow">издание</p><h2>Роман в трёх частях</h2><p class="lead">Город на дамбе, «Соль-7» и женщина, которая подписала собственный приговор.</p>' +
@@ -348,6 +352,8 @@
         '<div class="part-stack">' + parts + "</div></div></section>" +
       '<section class="section"><div class="wrap grid"><div class="book-edition"><p class="eyebrow">03 / издание</p><h2 class="mt-16">Выходные данные</h2><table class="id-table mt-24">' + facts + '</table><p class="meta mt-24">Демонстрационное издание. Текст, имена и события вымышлены.</p></div>' +
         '<div class="book-excerpt"><p class="eyebrow">фрагмент</p><div class="excerpt mt-16">' + excerpt + '</div><div class="mt-24"><a class="link-arrow" href="chapter.html?n=1">Читать целиком</a></div></div></div></section>' +
+      '<section class="section"><div class="wrap">' + sectionHead("04 / документы", "Бумажный след") +
+        '<div class="document-grid">' + documents + "</div></div></section>" +
       seamBlock(SITE.seams.book);
 
     document.title = "Соляной протокол / Илья Верес";
@@ -381,12 +387,15 @@
     var next = findChapter(n + 1);
     var notes = chapterNotes(chapter);
     var full = !!text;
+    var beats = chapter.beats && chapter.beats.length
+      ? '<div class="stub-beats"><p class="eyebrow">фабула</p><ol class="beats">' + chapter.beats.map(function (beat) { return "<li><p>" + esc(beat) + "</p></li>"; }).join("") + "</ol></div>"
+      : "";
     var body = full
       ? '<div class="reader-text" id="reader-text">' + paragraphs(text) + "</div>"
-      : '<div class="empty"><h3>Глава в работе</h3><p>' + esc(chapter.synopsis || "Синопсис пока не написан.") + "</p><p class=\"mt-16\">Полный текст пока доступен только для главы 1. Остальные главы открыты как карточки с синопсисом.</p><div class=\"actions\"><a class=\"link-arrow\" href=\"chapter.html?n=1\">Глава 1</a><a class=\"link-arrow\" href=\"book.html#contents\">К содержанию</a></div></div>";
+      : '<div class="empty"><h3>Глава в работе</h3><p>' + esc(chapter.synopsis || "Синопсис пока не написан.") + "</p>" + beats + '<p class="meta mt-16">Полный текст пока доступен только для главы 1. Остальные главы открыты как фабулы с опорными точками сюжета.</p><div class="actions"><a class="link-arrow" href="chapter.html?n=1">Глава 1</a><a class="link-arrow" href="book.html#contents">К содержанию</a></div></div>';
 
-    main.innerHTML = '<header class="reader-head"><div class="wrap"><p class="chapter-no">' + esc(part.title) + " / глава " + chapter.n + '</p><h1>' + esc(chapter.title) + '</h1><p class="meta">' + esc(chapter.status) + " / " + (full ? textWords(text) + " слов / " + readingTime(text) + " мин" : "синопсис") + " / POV " + esc(chapter.pov) + " / День " + esc(chapter.day) + " / демонстрационный текст</p></div></header>" +
-      '<div class="wrap"><div class="reader-tools"><div class="tool-field"><label>Шрифт</label><button type="button" class="font-step" data-font="-1" aria-label="Уменьшить шрифт">A-</button><button type="button" class="font-step" data-font="1" aria-label="Увеличить шрифт">A+</button></div><div class="tool-field"><label>Текст</label><span class="mono">' + (full ? "полный" : "синопсис") + '</span></div><div class="tool-field"><label>Прогресс</label><span class="mono" id="reader-progress-label">0%</span></div><button type="button" class="filter-toggle" data-print>Печать</button><div class="toolbar-spacer"></div><a class="link-quiet" href="book.html#contents">К содержанию</a></div>' +
+    main.innerHTML = '<header class="reader-head"><div class="wrap"><p class="chapter-no">' + esc(part.title) + " / глава " + chapter.n + '</p><h1>' + esc(chapter.title) + '</h1><p class="meta">' + esc(chapter.status) + " / " + (full ? textWords(text) + " слов / " + readingTime(text) + " мин" : "фабула") + " / POV " + esc(chapter.pov) + " / День " + esc(chapter.day) + " / демонстрационный текст</p></div></header>" +
+      '<div class="wrap"><div class="reader-tools"><div class="tool-field"><label>Шрифт</label><button type="button" class="font-step" data-font="-1" aria-label="Уменьшить шрифт">A-</button><button type="button" class="font-step" data-font="1" aria-label="Увеличить шрифт">A+</button></div><div class="tool-field"><label>Текст</label><span class="mono">' + (full ? "полный" : "фабула") + '</span></div><div class="tool-field"><label>Прогресс</label><span class="mono" id="reader-progress-label">0%</span></div><button type="button" class="filter-toggle" data-print>Печать</button><div class="toolbar-spacer"></div><a class="link-quiet" href="book.html#contents">К содержанию</a></div>' +
       '</div><div class="reader-progress" aria-hidden="true"><span id="reader-progress-bar"></span></div>' +
       '<div class="wrap reader-layout"><div>' + body + '<nav class="reader-nav">' + (prev ? '<a class="link-arrow" href="' + U.chapterUrl(prev.n) + '">' + pad(prev.n) + " / " + esc(prev.title) + "</a>" : "<span></span>") + (next ? '<a class="link-arrow" href="' + U.chapterUrl(next.n) + '">' + pad(next.n) + " / " + esc(next.title) + "</a>" : "<span></span>") + "</nav></div>" +
       '<aside class="reader-notes"><p class="eyebrow">пометки</p>' + (notes.length ? notes.map(function (note) { return '<div class="note-item"><span class="note-no">' + esc(note.type) + '</span><p><a class="link" href="' + note.href + '">' + esc(note.title) + "</a></p></div>"; }).join("") : '<p class="meta mt-16">К этой главе нет отдельных пометок.</p>') + '<p class="seam">' + esc(chapter.seam || SITE.seams.book) + "</p></aside></div>" +
@@ -441,6 +450,9 @@
       if (!location) return "";
       return '<a href="' + U.dossierUrl(id) + '"><span>' + esc(location.name) + '</span><span class="meta">' + esc(location.tier) + "</span></a>";
     }).join("");
+    var timeline = SITE.timeline.map(function (item) {
+      return '<article class="timeline-item"><div class="timeline-day"><span class="num">' + esc(item.day) + '</span><span class="meta">' + esc(item.date) + '</span></div><div class="timeline-body"><h3>' + esc(item.title) + '</h3><p>' + esc(item.text) + '</p><a class="link-quiet" href="' + U.chapterUrl(item.chapter) + '">Глава ' + item.chapter + "</a></div></article>";
+    }).join("");
 
     main.innerHTML = pageHead("Мир / Кассий", "Разрез города", "Кассий стоит на дамбе и соляных полях. Верхний ярус дышит отдельно, нижний платит за фильтры, а между ними лежит слой, который город называет порядком.", ["5 ярусов", "10 локаций", "7 организаций"]) +
       '<section class="section--tight"><div class="wrap"><div class="cross-section">' +
@@ -481,7 +493,9 @@
         }).join("") + "</div></div></section>" +
       '<section class="section"><div class="wrap">' + sectionHead("02 / места", "Три входа") +
         '<div class="card-grid card-grid--3">' + featured.map(locationCard).join("") + "</div></div></section>" +
-      '<section class="section"><div class="wrap">' + sectionHead("03 / словарь", "Соляные термины") +
+      '<section class="section"><div class="wrap">' + sectionHead("03 / хронология", "Семь дней") +
+        '<div class="timeline">' + timeline + "</div></div></section>" +
+      '<section class="section"><div class="wrap">' + sectionHead("04 / словарь", "Соляные термины") +
         '<div class="glossary">' + SITE.glossary.map(function (item, i) {
           var found = findEntity(item.link);
           return '<article class="glossary-item" id="term-' + (i + 1) + '"><span class="meta">' + pad(i + 1) + '</span><div><h3>' + esc(item.term) + '</h3><p>' + esc(item.text) + "</p>" + (found ? '<a class="link-quiet" href="' + U.dossierUrl(item.link) + '">' + esc(found.item.name) + "</a>" : "") + "</div></article>";
