@@ -321,7 +321,7 @@
 
     var parts = SITE.parts.map(function (part) {
       var chapters = SITE.chapters.filter(function (chapter) { return chapter.part === Number(part.id.replace("part-", "")); });
-      return '<div class="part-block"><div class="part-head"><h3>' + esc(part.title) + '</h3><span class="meta">' + esc(part.range) + "</span></div><div class=\"toc\">" + chapters.map(tocItem).join("") + "</div></div>";
+      return '<div class="part-block"><div class="part-head"><h3>' + esc(part.title) + '</h3><span class="meta">' + esc(part.range) + "</span></div>" + (part.summary ? '<p class="part-note">' + esc(part.summary) + "</p>" : "") + '<div class="toc">' + chapters.map(tocItem).join("") + "</div></div>";
     }).join("");
 
     var facts = [
