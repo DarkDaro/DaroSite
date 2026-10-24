@@ -47,7 +47,7 @@ async function main() {
       null,
       { timeout: 3000 }
     ).catch(() => {});
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(800);
 
     const slug = route.replace(/[^a-z0-9а-яё]+/gi, "-").replace(/^-+|-+$/g, "") || "page";
     const file = path.join(os.tmpdir(), "solyanoy-shot-" + slug + "-" + width + ".png");
