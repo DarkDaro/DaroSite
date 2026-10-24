@@ -1,6 +1,6 @@
 # Пакет документов для романа
 
-Версия: 0.3
+Версия: 0.4
 Дата: 2026-10-24
 Назначение: держать мир, план, хронологию и правки в одном месте, чтобы сюжет не расползался по чатам и черновикам.
 
@@ -79,7 +79,9 @@ docs/
     trilogy-dashboard.md
   site/
     README.md
-    theme-salt.css
+    next-session.md
+    session-summary-2026-10-24.md
+    session-handoff.md
   solyanoy-protocol/
     world-bible.md
     chapter-plan.md
@@ -89,6 +91,9 @@ docs/
     character-sheets.md
     location-sheets.md
     faction-sheets.md
+    drafts/
+      chapter-03-salt-on-teeth.md
+      chapter-04-second-contour.md
 ```
 
 ## Как адаптировать под другой проект
@@ -105,3 +110,4 @@ docs/
 | 0.1 | 2026-10-21 | Первый пакет шаблонов и пример для «Соляного протокола» |
 | 0.2 | 2026-10-22 | Добавлен пакет `series/` для серии из двух или трёх книг |
 | 0.3 | 2026-10-24 | Добавлена документация `site/`, зафиксирована активная неоновая тема |
+| 0.4 | 2026-10-24 | Добавлены полные главы 1-4, папка `drafts/` и итоговые документы сайта |
