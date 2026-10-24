@@ -1082,9 +1082,17 @@
       return '<a class="relation-row" href="' + entityUrl(relId) + '"><span class="rel-name">' + esc(entityName(relId)) + '</span><span class="rel-role">связь</span></a>';
     }).join("");
     var chapters = item.chapters.map(function (n) { return '<a class="link-quiet" href="' + U.chapterUrl(n) + '">' + n + "</a>"; }).join(", ");
+    var specs = [
+      ["Что делает", item.effect],
+      ["Цена", item.cost],
+      ["Предел", item.limit],
+      ["Сбой", item.failure]
+    ].map(function (row) {
+      return '<div class="spec-card"><h3>' + esc(row[0]) + '</h3><p>' + esc(row[1]) + "</p></div>";
+    }).join("");
     return crumbs([{ label: "Мир", href: "world.html" }, { label: isImplant ? "Имплантаты" : "Вооружение", href: isImplant ? "implants.html" : "weapons.html" }, { label: item.name, href: "#" }]) +
       dossierHead(item.name, "Досье / " + (isImplant ? "имплантат" : "вооружение"), item.summary, visual, [item.cls, item.maker, item.legality]) +
-      '<div class="wrap dossier-body"><div class="dossier-main"><p>' + esc(item.bio) + '</p><p class="quote">' + esc(item.summary) + '</p><div class="sub-actions"><a class="link-arrow" href="' + (isImplant ? "implants.html" : "weapons.html") + '">Весь каталог</a></div></div>' +
+      '<div class="wrap dossier-body"><div class="dossier-main">' + paragraphs(item.bio) + '<p class="quote">' + esc(item.summary) + '</p><div class="spec-grid">' + specs + '</div><div class="sub-actions"><a class="link-arrow" href="' + (isImplant ? "implants.html" : "weapons.html") + '">Весь каталог</a></div></div>' +
       '<aside class="dossier-aside"><table class="id-table"><tr><th>Класс</th><td>' + esc(item.cls) + '</td></tr><tr><th>Производитель</th><td>' + esc(item.maker) + '</td></tr><tr><th>Статус</th><td>' + esc(item.legality) + "</td></tr><tr><th>" + (isImplant ? "Риск" : "Боеприпас") + "</th><td>" + esc(isImplant ? item.risk : item.ammo) + '</td></tr><tr><th>Главы</th><td>' + chapters + "</td></tr></table>" +
         '<h2 class="aside-title">Связи</h2><div class="relation-list">' + relations + '</div><h2 class="aside-title">Слой 2</h2><p class="seam">' + esc(item.seam) + "</p></aside></div>";
   }

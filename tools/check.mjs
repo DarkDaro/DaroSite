@@ -98,9 +98,11 @@ function checkEntities(site) {
   }
   for (const implant of site.implants) {
     for (const relation of implant.related || []) if (!all.has(relation)) issues.push("implant " + implant.id + ": missing " + relation);
+    for (const field of ["effect", "cost", "limit", "failure"]) if (!implant[field]) issues.push("implant " + implant.id + ": missing " + field);
   }
   for (const weapon of site.weapons) {
     for (const relation of weapon.related || []) if (!all.has(relation)) issues.push("weapon " + weapon.id + ": missing " + relation);
+    for (const field of ["effect", "cost", "limit", "failure"]) if (!weapon[field]) issues.push("weapon " + weapon.id + ": missing " + field);
   }
   for (const term of site.glossary) {
     if (!all.has(term.link)) issues.push("glossary " + term.term + ": missing link " + term.link);

@@ -3522,3 +3522,38 @@ body::after {
   .timeline-day { flex-direction: row; align-items: baseline; justify-content: space-between; gap: 10px; }
   .beats li { grid-template-columns: 28px minmax(0, 1fr); gap: 8px; }
 }
+
+
+/* Досье техники: имплантаты и вооружение. 24.10 */
+
+.spec-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.spec-card {
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.spec-card h3 {
+  margin-bottom: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lime);
+}
+
+.spec-card p {
+  max-width: 52ch;
+  color: var(--bone-dim);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 680px) {
+  .spec-grid { grid-template-columns: 1fr; }
+}

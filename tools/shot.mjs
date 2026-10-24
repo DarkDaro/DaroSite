@@ -8,8 +8,10 @@ import { loadPlaywright } from "./global.mjs";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(here, "..");
 const route = process.argv[2] || "/index.html";
-const width = Number(process.argv[3] || 390);
-const height = Number(process.argv[4] || 844);
+const widthArg = process.argv[3] && !process.argv[3].startsWith("--") ? process.argv[3] : "390";
+const heightArg = process.argv[4] && !process.argv[4].startsWith("--") ? process.argv[4] : "844";
+const width = Number(widthArg);
+const height = Number(heightArg);
 const fullPage = process.argv.includes("--full");
 
 function findChromium() {
