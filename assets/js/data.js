@@ -1001,6 +1001,7 @@ window.SITE = (function () {
       "aliases": "А. Рейн, отдел допусков",
       "portrait": "ada",
       "focus": "50% 30%",
+      "portraitNote": "фото: Thomas Quine / CC BY 2.0, неоновая обработка",
       "tags": [
         "второстепенный",
         "юрист",
