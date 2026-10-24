@@ -68,8 +68,11 @@ function main() {
     if (!Array.isArray(chapter.beats) || chapter.beats.length !== 3) issues.push("chapter " + chapter.n + ": expected 3 beats");
     if (!chapter.pov) issues.push("chapter " + chapter.n + ": no POV");
     if (chapter.day === undefined || chapter.day === null) issues.push("chapter " + chapter.n + ": no day");
-    if (chapter.n === 1 && !chapter.text) issues.push("chapter 1: no text");
-    if (chapter.n !== 1 && chapter.text) issues.push("chapter " + chapter.n + ": unexpected full text");
+    if (chapter.text) {
+      const chapterWords = words(chapter.text);
+      if (chapterWords < 1800) issues.push("chapter " + chapter.n + ": too short, " + chapterWords + " words");
+      if (chapter.text.includes("\u2014")) issues.push("chapter " + chapter.n + ": em dash");
+    }
   }
 
   for (const character of site.characters) {

@@ -342,9 +342,9 @@
     main.innerHTML = pageHead("Роман / 2026", "Соляной протокол", SITE.meta.annotation, ["Илья Верес", "34 главы", "три части", "демонстрационный материал"]) +
       '<section class="section--tight"><div class="wrap book-hero"><div class="book-hero-cover">' + U.cover("sol") + "</div>" +
         '<div class="book-hero-body"><p class="eyebrow">издание</p><h2>Роман в трёх частях</h2><p class="lead">Город на дамбе, «Соль-7» и женщина, которая подписала собственный приговор.</p>' +
-        '<div class="book-actions"><a class="link-arrow" href="chapter.html?n=1">Читать главу 1</a><a class="link-arrow" href="#contents">Содержание</a><a class="link-arrow" href="library.html">Библиотека</a></div>' +
+        '<div class="book-actions"><a class="link-arrow" href="chapter.html?n=1">Читать главу 1</a><a class="link-arrow" href="chapter.html?n=2">Читать главу 2</a><a class="link-arrow" href="#contents">Содержание</a><a class="link-arrow" href="library.html">Библиотека</a></div>' +
         '<div class="book-facts">' + [
-          ["Автор", SITE.meta.author], ["Год", SITE.meta.year], ["Объём", "34 главы"], ["Части", "3"], ["Город", SITE.meta.city], ["Доступно", "1 из 4 глав"]
+          ["Автор", SITE.meta.author], ["Год", SITE.meta.year], ["Объём", "34 главы"], ["Части", "3"], ["Город", SITE.meta.city], ["Доступно", "2 из 4 глав"]
         ].map(function (row) { return '<div class="book-fact"><span class="meta">' + esc(row[0]) + '</span><span class="book-fact-value">' + esc(row[1]) + "</span></div>"; }).join("") + "</div></div></div></section>" +
       '<section class="section"><div class="wrap">' + sectionHead("01 / аннотация", "О чём эта книга") +
         '<div class="card-grid card-grid--3">' + SITE.meta.blocks.map(function (block) { return infoCard(block.title, block.text); }).join("") + "</div></div></section>" +
@@ -392,7 +392,7 @@
       : "";
     var body = full
       ? '<div class="reader-text" id="reader-text">' + paragraphs(text) + "</div>"
-      : '<div class="empty"><h3>Глава в работе</h3><p>' + esc(chapter.synopsis || "Синопсис пока не написан.") + "</p>" + beats + '<p class="meta mt-16">Полный текст пока доступен только для главы 1. Остальные главы открыты как фабулы с опорными точками сюжета.</p><div class="actions"><a class="link-arrow" href="chapter.html?n=1">Глава 1</a><a class="link-arrow" href="book.html#contents">К содержанию</a></div></div>';
+      : '<div class="empty"><h3>Глава в работе</h3><p>' + esc(chapter.synopsis || "Синопсис пока не написан.") + "</p>" + beats + '<p class="meta mt-16">Полный текст доступен для глав 1 и 2. Остальные главы открыты как фабулы с опорными точками сюжета.</p><div class="actions"><a class="link-arrow" href="chapter.html?n=1">Глава 1</a><a class="link-arrow" href="chapter.html?n=2">Глава 2</a><a class="link-arrow" href="book.html#contents">К содержанию</a></div></div>';
 
     main.innerHTML = '<header class="reader-head"><div class="wrap"><p class="chapter-no">' + esc(part.title) + " / глава " + chapter.n + '</p><h1>' + esc(chapter.title) + '</h1><p class="meta">' + esc(chapter.status) + " / " + (full ? textWords(text) + " слов / " + readingTime(text) + " мин" : "фабула") + " / POV " + esc(chapter.pov) + " / День " + esc(chapter.day) + " / демонстрационный текст</p></div></header>" +
       '<div class="wrap"><div class="reader-tools"><div class="tool-field"><label>Шрифт</label><button type="button" class="font-step" data-font="-1" aria-label="Уменьшить шрифт">A-</button><button type="button" class="font-step" data-font="1" aria-label="Увеличить шрифт">A+</button></div><div class="tool-field"><label>Текст</label><span class="mono">' + (full ? "полный" : "фабула") + '</span></div><div class="tool-field"><label>Прогресс</label><span class="mono" id="reader-progress-label">0%</span></div><button type="button" class="filter-toggle" data-print>Печать</button><div class="toolbar-spacer"></div><a class="link-quiet" href="book.html#contents">К содержанию</a></div>' +

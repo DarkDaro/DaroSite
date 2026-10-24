@@ -49,24 +49,21 @@ function checkChapters(site) {
   const numbers = new Set(site.chapters.map((chapter) => chapter.n));
   for (let n = 1; n <= 34; n++) if (!numbers.has(n)) issues.push("missing chapter " + n);
   for (const chapter of site.chapters) {
-    if (chapter.n === 1 && !chapter.text) issues.push("chapter 1 text is empty");
-    if (chapter.n !== 1 && chapter.text) issues.push("chapter " + chapter.n + " should be a stub");
     if (chapter.n >= 1 && chapter.n <= 11 && chapter.part !== 1) issues.push("chapter " + chapter.n + ": wrong part");
     if (chapter.n >= 12 && chapter.n <= 23 && chapter.part !== 2) issues.push("chapter " + chapter.n + ": wrong part");
     if (chapter.n >= 24 && chapter.n <= 34 && chapter.part !== 3) issues.push("chapter " + chapter.n + ": wrong part");
     if (!Array.isArray(chapter.beats) || chapter.beats.length !== 3) issues.push("chapter " + chapter.n + ": expected 3 beats");
+    if (chapter.text) {
+      const words = chapter.text.split(/\s+/).filter(Boolean).length;
+      if (words < 1800) issues.push("chapter " + chapter.n + " is too short: " + words + " words");
+      if (chapter.text.includes("\u2014")) issues.push("chapter " + chapter.n + " contains an em dash");
+    }
   }
   for (const doc of site.documents) {
     if (!doc.title || !doc.text || !doc.chapter) issues.push("document " + doc.id + ": incomplete");
   }
   for (const item of site.timeline) {
     if (!item.day || !item.title || !item.text || !item.chapter) issues.push("timeline " + item.day + ": incomplete");
-  }
-  const first = site.chapters.find((chapter) => chapter.n === 1);
-  if (first && first.text) {
-    const words = first.text.split(/\s+/).filter(Boolean).length;
-    if (words < 1800) issues.push("chapter 1 is too short: " + words + " words");
-    if (first.text.includes("\u2014")) issues.push("chapter 1 contains an em dash");
   }
 }
 
