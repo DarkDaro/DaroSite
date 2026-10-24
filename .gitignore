@@ -81,3 +81,6 @@ secrets/
 
 # Локальный архив проекта, не версионируется
 archive/
+
+# Черновики глав: сначала текст, потом перенос в data.js
+docs/solyanoy-protocol/drafts/
