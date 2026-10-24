@@ -1180,6 +1180,11 @@ table.data tr:hover td { background: rgba(237, 231, 218, 0.025); }
   cursor: help;
   color: var(--bone);
 }
+.reader-text a.link {
+  padding: 0 8px;
+  margin: 0 -8px;
+  border-radius: 3px;
+}
 .reader-notes { border-left: 1px solid var(--line); padding-left: clamp(16px, 2vw, 28px); }
 .note-item { margin-bottom: 26px; }
 .note-item .note-no { font-family: var(--mono); font-size: 9px; color: var(--amber); letter-spacing: 0.1em; }
@@ -3311,6 +3316,10 @@ body::after {
     min-height: 36px;
     display: inline-flex;
     align-items: center;
+  }
+  .note-item .link {
+    min-width: 36px;
+    justify-content: center;
   }
   .tool-field input,
   .tool-field select,

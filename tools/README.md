@@ -19,8 +19,8 @@ npm test
 Запускает по очереди:
 
 1. `npm run check` — данные, главы, ссылки, изображения, синтаксис.
-2. `npm run qa` — 18 маршрутов на desktop и mobile.
-3. `npm run mobile` — 18 маршрутов на 320, 360, 390, 430 и 768 px.
+2. `npm run qa` — 19 маршрутов на desktop и mobile.
+3. `npm run mobile` — 19 маршрутов на 320, 360, 390, 430 и 768 px.
 4. `npm run interactions` — меню, поиск, фильтры, шрифт читалки, кнопка наверх, липкая шапка.
 
 Полный прогон нужен перед коммитом. Для мелкой правки достаточно `npm run quick`.
@@ -39,7 +39,7 @@ Playwright-проверки закрывают браузер и локальн�
 | `npm run assets` | Аудит WebP через `sharp` |
 | `npm run crawl` | Обход внутренних ссылок и поиск 404 |
 | `npm run shot -- /index.html 390` | Скриншот маршрута |
-| `npm run qa` | 18 маршрутов, desktop и mobile |
+| `npm run qa` | 19 маршрутов, desktop и mobile |
 | `npm run mobile` | 5 ширин экрана, 90 проверок |
 | `npm run interactions` | 11 интерактивных проверок |
 | `npm run audit` | Контент, HTML, ассеты и обход ссылок |
