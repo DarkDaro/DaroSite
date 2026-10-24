@@ -133,9 +133,9 @@
     "</dialog>";
   }
 
-  function toTopHTML() {
-    return '<button class="to-top" id="to-top" type="button" aria-label="Вернуться наверх" aria-hidden="true" tabindex="-1">' +
-      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"></path><path d="m5 12 7-7 7 7"></path></svg>' +
+  function scrollTopHTML() {
+    return '<button class="scroll-top-btn" id="scroll-top-btn" type="button" aria-label="Вернуться наверх" aria-hidden="true" tabindex="-1">' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 15 7-7 7 7"></path></svg>' +
     "</button>";
   }
 
@@ -147,9 +147,9 @@
     var holder = doc.createElement("div");
     holder.innerHTML = dialogHTML();
     while (holder.firstChild) doc.body.appendChild(holder.firstChild);
-    if (!doc.getElementById("to-top")) {
+    if (!doc.getElementById("scroll-top-btn")) {
       var topHolder = doc.createElement("div");
-      topHolder.innerHTML = toTopHTML();
+      topHolder.innerHTML = scrollTopHTML();
       doc.body.appendChild(topHolder.firstChild);
     }
   }
@@ -339,22 +339,17 @@
     });
   }
 
-  function initToTop() {
-    var button = doc.getElementById("to-top");
+  function initScrollToTop() {
+    var button = doc.getElementById("scroll-top-btn");
     if (!button) return;
-    var root = doc.documentElement;
     var ticking = false;
 
     function update() {
       ticking = false;
-      var max = root.scrollHeight - window.innerHeight;
-      var y = window.scrollY || window.pageYOffset || 0;
-      var visible = max > 240 && y > 360;
-      var progress = max > 0 ? Math.min(100, Math.max(0, (y / max) * 100)) : 0;
-      button.classList.toggle("is-visible", visible);
+      var visible = (window.scrollY || window.pageYOffset || 0) > 400;
+      button.classList.toggle("visible", visible);
       button.setAttribute("aria-hidden", visible ? "false" : "true");
       button.tabIndex = visible ? 0 : -1;
-      button.style.setProperty("--to-top-progress", progress.toFixed(1) + "%");
     }
 
     function onScroll() {
@@ -431,6 +426,6 @@
   buildHeader();
   initSearch();
   initMenu();
-  initToTop();
+  initScrollToTop();
   initLayer();
 })();

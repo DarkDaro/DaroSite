@@ -87,9 +87,9 @@ async function main() {
 
     await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
     await page.waitForTimeout(400);
-    const topVisible = await page.evaluate(() => document.getElementById("to-top")?.classList.contains("is-visible"));
+    const topVisible = await page.evaluate(() => document.getElementById("scroll-top-btn")?.classList.contains("visible"));
     check("Кнопка наверх появляется", !!topVisible);
-    await page.click("#to-top");
+    await page.click("#scroll-top-btn");
     await page.waitForFunction(() => window.scrollY < 2, null, { timeout: 5000 }).catch(() => {});
     const scrollAfter = await page.evaluate(() => window.scrollY);
     check("Кнопка наверх возвращает в начало", scrollAfter < 2, String(scrollAfter));

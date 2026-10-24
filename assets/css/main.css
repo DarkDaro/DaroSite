@@ -2955,54 +2955,41 @@ table.data tr:hover td { background: rgba(198, 255, 74, 0.035); }
 
 /* Кнопка наверх и дополнительные эффекты. 24.10 */
 
-.to-top {
-  --to-top-progress: 0%;
+.scroll-top-btn {
   position: fixed;
-  right: clamp(14px, 2.2vw, 28px);
-  bottom: clamp(14px, 2.2vw, 28px);
-  z-index: 95;
-  width: 54px;
-  height: 54px;
+  left: 24px;
+  bottom: 24px;
+  z-index: 1000;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(95, 251, 241, 0.32);
+  border: 1px solid rgba(95, 251, 241, 0.67);
   border-radius: 50%;
-  background: rgba(4, 8, 14, 0.86);
+  background: rgba(11, 20, 34, 0.93);
   color: var(--cyan);
-  box-shadow: 0 0 24px rgba(95, 251, 241, 0.1), 0 14px 34px rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(14px);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translateY(16px) scale(0.92);
-  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease), visibility 0.25s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+  transform: translateY(20px);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), visibility 0.3s, background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 0 20px rgba(95, 251, 241, 0.16);
   cursor: pointer;
-  isolation: isolate;
 }
-.to-top.is-visible {
+.scroll-top-btn.visible {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: none;
+  transform: translateY(0);
 }
-.to-top::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  z-index: 0;
-  border-radius: 50%;
-  background: conic-gradient(var(--lime) 0 var(--to-top-progress), rgba(95, 251, 241, 0.14) var(--to-top-progress) 100%);
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
-  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
-  pointer-events: none;
-  opacity: 0.9;
-}
-.to-top::after {
+.scroll-top-btn::after {
   content: "Наверх";
   position: absolute;
-  right: calc(100% + 12px);
+  left: calc(100% + 12px);
   top: 50%;
-  transform: translate(6px, -50%);
+  transform: translate(-6px, -50%);
   padding: 6px 9px;
   border: 1px solid var(--line);
   background: rgba(4, 8, 14, 0.94);
@@ -3016,29 +3003,32 @@ table.data tr:hover td { background: rgba(198, 255, 74, 0.035); }
   pointer-events: none;
   transition: opacity 0.18s var(--ease), transform 0.18s var(--ease);
 }
-.to-top:hover::after,
-.to-top:focus-visible::after {
+.scroll-top-btn:hover::after,
+.scroll-top-btn:focus-visible::after {
   opacity: 1;
   transform: translate(0, -50%);
 }
-.to-top:hover {
-  border-color: var(--lime);
-  color: var(--lime);
-  box-shadow: 0 0 30px rgba(198, 255, 74, 0.18), 0 16px 40px rgba(0, 0, 0, 0.5);
+.scroll-top-btn:hover {
+  background: var(--cyan);
+  color: var(--ink);
+  border-color: var(--cyan);
+  box-shadow: 0 0 25px rgba(95, 251, 241, 0.55);
 }
-.to-top svg {
-  position: relative;
-  z-index: 1;
+.scroll-top-btn:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+.scroll-top-btn svg {
   width: 20px;
   height: 20px;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.8;
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
   transition: transform 0.22s var(--ease);
 }
-.to-top:hover svg { transform: translateY(-2px); }
+.scroll-top-btn:hover svg { transform: translateY(-2px); }
 
 body::after {
   content: "";
@@ -3114,8 +3104,8 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   body::after,
   .section-head .num { animation: none; }
-  .to-top,
-  .to-top svg,
+  .scroll-top-btn,
+  .scroll-top-btn svg,
   .main-nav a::before,
   .world-cat,
   .org-card,
@@ -3124,14 +3114,14 @@ body::after {
 }
 
 @media (max-width: 680px) {
-  .to-top {
-    width: 46px;
-    height: 46px;
-    right: 12px;
-    bottom: 12px;
+  .scroll-top-btn {
+    left: 16px;
+    bottom: 16px;
+    width: 44px;
+    height: 44px;
   }
-  .to-top::after { display: none; }
-  .to-top svg { width: 18px; height: 18px; }
+  .scroll-top-btn::after { display: none; }
+  .scroll-top-btn svg { width: 18px; height: 18px; }
   .world-cats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .world-cat { min-width: 0; padding: 16px 10px 20px 0; }
   .world-cat h3 { font-size: clamp(16px, 4.6vw, 19px); overflow-wrap: anywhere; }
