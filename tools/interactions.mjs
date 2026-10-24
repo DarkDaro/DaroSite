@@ -4,6 +4,7 @@ import os from "node:os";
 import { fileURLToPath } from "node:url";
 import { createStaticServer } from "./server.mjs";
 import { loadPlaywright } from "./global.mjs";
+import { closeBrowser, closeServer } from "./close.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(here, "..");
@@ -126,8 +127,8 @@ async function main() {
     console.log("Отчёт:", reportPath);
     if (issues.length) process.exitCode = 1;
   } finally {
-    if (browser) await browser.close();
-    await new Promise((resolve) => server.close(resolve));
+    await closeBrowser(browser);
+    await closeServer(server);
   }
 }
 
