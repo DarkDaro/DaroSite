@@ -213,7 +213,7 @@
   /* Главная */
 
   function renderHome() {
-    var first = SITE.chapters.slice(0, 8);
+    var first = SITE.chapters.filter(function (c) { return c.status === "опубликовано"; });
     var worldLinks = [
       { label: "Персонажи", href: "characters.html", count: SITE.characters.length, num: "01" },
       { label: "Локации", href: "locations.html", count: SITE.locations.length, num: "02" },
@@ -254,7 +254,7 @@
       "</div></section>" +
 
       '<section class="section"><div class="wrap">' +
-        sectionHead("02 / содержание", "Первые восемь глав") +
+        sectionHead("02 / содержание", "Первые " + first.length + " " + U.plural(first.length, ["глава", "главы", "глав"])) +
         '<div class="toc">' + first.map(tocItem).join("") + "</div>" +
         '<div class="mt-24"><a class="link-arrow" href="book.html#contents">Полное содержание</a></div>' +
       "</div></section>" +
