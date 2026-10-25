@@ -13,6 +13,7 @@
     "content": "node tools/content.mjs",
     "html": "node tools/html.mjs",
     "assets": "node tools/assets.mjs",
+    "music": "node tools/music.mjs",
     "crawl": "node tools/crawl.mjs",
     "shot": "node tools/shot.mjs",
     "qa": "node tools/qa.mjs",

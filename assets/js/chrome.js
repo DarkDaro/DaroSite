@@ -104,7 +104,7 @@
         '<div class="footer-grid">' +
           '<div><h3>Архив</h3><a href="library.html">Библиотека</a><a href="book.html">Соляной протокол</a><a href="gallery.html">Галерея пластин</a><a href="about.html">Об авторе</a></div>' +
           '<div><h3>Мир</h3><a href="characters.html">Персонажи</a><a href="locations.html">Локации</a><a href="corporations.html">Организации</a><a href="implants.html">Имплантаты</a><a href="weapons.html">Вооружение</a></div>' +
-          '<div><h3>Служебное</h3><a href="world.html">Разрез Кассия</a><a href="book.html#contents">Содержание</a><a href="about.html#credits">Изображения и лицензии</a><a href="about.html#project">О проекте</a></div>' +
+          '<div><h3>Служебное</h3><a href="world.html">Разрез Кассия</a><a href="book.html#contents">Содержание</a><a href="about.html#credits">Изображения и лицензии</a><a href="about.html#project">О проекте</a><a href="about.html#sound">Настройки звука</a></div>' +
           '<div><h3>Колофон</h3><p class="footer-note">Демонстрационный артбук-архив. Книга, автор и город вымышлены. Фотографии взяты по свободным лицензиям, авторы указаны в кредитах.</p></div>' +
         "</div>" +
         '<div class="footer-bottom">' +

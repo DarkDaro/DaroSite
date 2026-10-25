@@ -81,6 +81,7 @@ async function main() {
       return {
         src: audio ? audio.src : "",
         duration: audio ? audio.duration : 0,
+        loop: audio ? audio.loop : false,
         error: audio && audio.error ? audio.error.code : 0,
         hasButton: !!button,
         pressed: button ? button.getAttribute("aria-pressed") : null
@@ -88,7 +89,7 @@ async function main() {
     });
     check("Кнопка звука есть в шапке", audioHome.hasButton);
     check("На главной тема дождя", /rain\.mp3/.test(audioHome.src), audioHome.src);
-    check("Аудио читается браузером", audioHome.duration > 1 && !audioHome.error, JSON.stringify(audioHome));
+    check("Музыка читается и зациклена", audioHome.duration > 40 && audioHome.loop && !audioHome.error, JSON.stringify(audioHome));
 
     await page.click("[data-sound-toggle]");
     const muted = await page.evaluate(() => {
@@ -174,6 +175,24 @@ async function main() {
       heading: document.querySelector("#sound h2")?.textContent || ""
     }));
     check("На странице автора есть проверка звука", soundPanel.tests === 3, soundPanel.heading || "нет блока");
+
+    const volume = await page.evaluate(() => {
+      const input = document.querySelector("[data-volume]");
+      if (!input) return { ok: false, state: null, label: "" };
+      input.value = "45";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      return {
+        ok: true,
+        label: document.querySelector("[data-volume-value]")?.textContent || "",
+        stored: localStorage.getItem("sol-volume"),
+        state: window.SolSound?.getState?.() || null
+      };
+    });
+    const levelsOk = volume.state && volume.state.musicVolume <= 0.18 && volume.state.effectVolume <= 0.09 && volume.state.voiceVolume <= 0.6;
+    const sumOk = volume.state && volume.state.musicVolume + volume.state.effectVolume + volume.state.voiceVolume < 1;
+    check("Ползунок громкости работает", volume.ok && volume.state?.masterVolume === 0.45 && volume.label === "45%" && volume.stored === "0.45", JSON.stringify(volume));
+    check("Уровни звука без перегруза", levelsOk && sumOk, JSON.stringify(volume.state));
 
     await page.goto(base + "/dossier.html?id=kira", { waitUntil: "load" });
     await page.waitForTimeout(300);

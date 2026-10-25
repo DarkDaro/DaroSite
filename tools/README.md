@@ -21,7 +21,7 @@ npm test
 1. `npm run check` — данные, главы, ссылки, изображения, аудио, синтаксис.
 2. `npm run qa` — 21 маршрут на desktop и mobile.
 3. `npm run mobile` — 21 маршрут на 320, 360, 390, 430 и 768 px.
-4. `npm run interactions` — меню, поиск, фильтры, шрифт читалки, кнопка наверх, липкая шапка.
+4. `npm run interactions` — меню, поиск, фильтры, шрифт читалки, кнопка наверх, липкая шапка, звук и ползунок громкости.
 
 Полный прогон нужен перед коммитом. Для мелкой правки достаточно `npm run quick`.
 
@@ -37,11 +37,12 @@ Playwright-проверки закрывают браузер и локальн�
 | `npm run content` | Разбор контента, JSON и CSV по главам |
 | `npm run html` | Аудит HTML-оболочек через `cheerio` |
 | `npm run assets` | Аудит WebP через `sharp` |
+| `npm run music` | Пересборка пяти MP3-тем через ffmpeg |
 | `npm run crawl` | Обход внутренних ссылок и поиск 404 |
 | `npm run shot -- /index.html 390` | Скриншот маршрута |
 | `npm run qa` | 21 маршрут, desktop и mobile |
 | `npm run mobile` | 5 ширин экрана, 105 проверок |
-| `npm run interactions` | 18 интерактивных проверок |
+| `npm run interactions` | 25 интерактивных проверок |
 | `npm run audit` | Контент, HTML, ассеты и обход ссылок |
 
 ## Файлы
@@ -55,6 +56,7 @@ Playwright-проверки закрывают браузер и локальн�
 | `content.mjs` | Разбор контента и экспорт JSON/CSV |
 | `html.mjs` | Аудит HTML через `cheerio` |
 | `assets.mjs` | Аудит изображений через `sharp` |
+| `music.mjs` | Синтез пяти музыкальных тем и кодирование MP3 |
 | `crawl.mjs` | Обход ссылок через Playwright |
 | `shot.mjs` | Скриншот маршрута |
 | `qa.mjs` | Полный QA по маршрутам |

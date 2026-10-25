@@ -5,10 +5,13 @@
 
   var doc = document;
   var STORAGE_KEY = "sol-sound";
+  var VOLUME_KEY = "sol-volume";
   var TRACK_KEY = "sol-sound-track";
   var TIME_KEY = "sol-sound-time";
-  var MUSIC_VOLUME = 0.32;
-  var EFFECT_VOLUME = 0.16;
+  var MUSIC_BASE = 0.18;
+  var EFFECT_BASE = 0.09;
+  var VOICE_BASE = 0.6;
+  var DEFAULT_VOLUME = 0.7;
   var tracks = {
     rain: "assets/audio/rain.mp3",
     paper: "assets/audio/paper.mp3",
@@ -26,8 +29,10 @@
   var gestureArmed = false;
   var fxContext = null;
   var fxGain = null;
+  var fxCompressor = null;
   var speaking = false;
   var voice = null;
+  var masterVolume = DEFAULT_VOLUME;
 
   function pageName() {
     if (doc.body && doc.body.dataset.page) return doc.body.dataset.page;
@@ -53,6 +58,55 @@
 
   function writeEnabled(value) {
     try { window.localStorage.setItem(STORAGE_KEY, value ? "1" : "0"); } catch (error) { /* без хранилища */ }
+  }
+
+  function readVolume() {
+    try {
+      var stored = parseFloat(window.localStorage.getItem(VOLUME_KEY));
+      if (isFinite(stored) && stored >= 0 && stored <= 1) return stored;
+    } catch (error) { /* без хранилища */ }
+    return DEFAULT_VOLUME;
+  }
+
+  function writeVolume(value) {
+    try { window.localStorage.setItem(VOLUME_KEY, String(value)); } catch (error) { /* без хранилища */ }
+  }
+
+  function musicLevel() { return MUSIC_BASE * masterVolume; }
+  function effectLevel() { return EFFECT_BASE * masterVolume; }
+  function voiceLevel() { return VOICE_BASE * masterVolume; }
+
+  function syncVolumeControls() {
+    var percent = Math.round(masterVolume * 100);
+    doc.querySelectorAll("[data-volume]").forEach(function (input) {
+      input.style.setProperty("--volume", percent + "%");
+      if (input.value !== String(percent)) input.value = String(percent);
+    });
+    doc.querySelectorAll("[data-volume-value]").forEach(function (output) {
+      var text = percent + "%";
+      if (output.textContent !== text) output.textContent = text;
+    });
+  }
+
+  function applyVolumes() {
+    if (audio) audio.volume = enabled ? musicLevel() : 0;
+    if (fxGain && fxContext) {
+      fxGain.gain.setTargetAtTime(effectLevel(), fxContext.currentTime, 0.015);
+    }
+  }
+
+  function setVolume(value) {
+    value = Number(value);
+    if (!isFinite(value)) return;
+    masterVolume = Math.max(0, Math.min(1, value));
+    writeVolume(masterVolume);
+    if (fadeFrame) {
+      window.cancelAnimationFrame(fadeFrame);
+      fadeFrame = 0;
+    }
+    applyVolumes();
+    if (enabled && masterVolume > 0 && audio && audio.paused) play();
+    syncVolumeControls();
   }
 
   function readSession(key) {
@@ -109,7 +163,9 @@
   }
 
   function play() {
-    if (!audio || !enabled) return;
+    if (!audio || !enabled || masterVolume <= 0) return;
+    var level = musicLevel();
+    audio.volume = level * 0.75;
     var promise = audio.play();
     if (promise && promise.catch) {
       promise.catch(function () {
@@ -120,8 +176,7 @@
         armGesture();
       });
     }
-    audio.volume = Math.min(MUSIC_VOLUME, 0.2);
-    fadeTo(MUSIC_VOLUME, 1100);
+    fadeTo(level, 1100);
     if (button) button.classList.remove("is-blocked");
   }
 
@@ -184,8 +239,15 @@
     if (!fxContext) {
       fxContext = new Ctx();
       fxGain = fxContext.createGain();
-      fxGain.gain.value = EFFECT_VOLUME;
-      fxGain.connect(fxContext.destination);
+      fxGain.gain.value = effectLevel();
+      fxCompressor = fxContext.createDynamicsCompressor();
+      fxCompressor.threshold.value = -12;
+      fxCompressor.knee.value = 6;
+      fxCompressor.ratio.value = 6;
+      fxCompressor.attack.value = 0.003;
+      fxCompressor.release.value = 0.25;
+      fxGain.connect(fxCompressor);
+      fxCompressor.connect(fxContext.destination);
     }
     if (fxContext.state === "suspended") fxContext.resume();
     return fxContext;
@@ -232,7 +294,7 @@
   }
 
   function effect(name) {
-    if (!enabled) return;
+    if (!enabled || masterVolume <= 0) return;
     if (name === "click") {
       tone(880, 0.055, { type: "triangle", gain: 0.075, end: 620 });
     } else if (name === "open") {
@@ -318,7 +380,7 @@
     utterance.lang = "ru-RU";
     utterance.rate = 0.92;
     utterance.pitch = 0.92;
-    utterance.volume = 0.9;
+    utterance.volume = voiceLevel();
     if (voice) utterance.voice = voice;
     utterance.onstart = function () {
       speaking = true;
@@ -392,7 +454,11 @@
       var testKind = test.getAttribute("data-sound-test");
       if (testKind === "music") {
         if (!enabled) setEnabled(true);
-        else play();
+        if (audio) {
+          audio.volume = 0;
+          try { audio.currentTime = 0; } catch (error) { /* метаданные ещё не готовы */ }
+        }
+        play();
         effect("toggle");
       } else if (testKind === "effect") {
         effect("found");
@@ -427,6 +493,7 @@
     button = doc.querySelector("[data-sound-toggle]");
     currentTrack = trackForPage(pageName());
     enabled = readEnabled();
+    masterVolume = readVolume();
     updateButton();
 
     audio = doc.createElement("audio");
@@ -448,6 +515,20 @@
     window.addEventListener("pagehide", saveState);
     window.addEventListener("beforeunload", saveState);
     doc.addEventListener("click", onDocumentClick);
+    doc.addEventListener("input", function (event) {
+      var input = event.target.closest ? event.target.closest("[data-volume]") : null;
+      if (!input) return;
+      setVolume(Number(input.value) / 100);
+    });
+    doc.addEventListener("change", function (event) {
+      var input = event.target.closest ? event.target.closest("[data-volume]") : null;
+      if (input) effect("click");
+    });
+
+    var main = doc.getElementById("main");
+    if (main && window.MutationObserver) {
+      new MutationObserver(function () { syncVolumeControls(); }).observe(main, { childList: true, subtree: true });
+    }
 
     if (hasSpeech()) {
       voice = pickVoice();
@@ -463,6 +544,7 @@
     }
 
     restorePosition();
+    syncVolumeControls();
     if (enabled) play();
     else audio.pause();
   }
@@ -474,6 +556,9 @@
     speak: speak,
     stopVoice: function () { stopSpeech(true); },
     isSpeaking: function () { return speaking; },
+    getVolume: function () { return masterVolume; },
+    setVolume: setVolume,
+    syncVolume: syncVolumeControls,
     getState: function () {
       return {
         enabled: enabled,
@@ -481,6 +566,10 @@
         src: audio ? audio.src : "",
         paused: audio ? audio.paused : true,
         volume: audio ? audio.volume : 0,
+        masterVolume: masterVolume,
+        musicVolume: musicLevel(),
+        effectVolume: effectLevel(),
+        voiceVolume: voiceLevel(),
         speaking: speaking,
         voice: voice ? voice.name : ""
       };
