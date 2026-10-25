@@ -102,14 +102,14 @@
     return '<footer class="site-footer">' +
       '<div class="wrap">' +
         '<div class="footer-grid">' +
-          '<div><h3>Архив</h3><a href="library.html">Библиотека</a><a href="book.html">Соляной протокол</a><a href="gallery.html">Галерея пластин</a><a href="about.html">Об авторе</a></div>' +
+          '<div><h3>Архив</h3><a href="library.html">Библиотека</a><a href="book.html">Соляной протокол</a><a href="pitch.html">Питч для издателей</a><a href="gallery.html">Галерея пластин</a><a href="about.html">Об авторе</a></div>' +
           '<div><h3>Мир</h3><a href="characters.html">Персонажи</a><a href="locations.html">Локации</a><a href="corporations.html">Организации</a><a href="implants.html">Имплантаты</a><a href="weapons.html">Вооружение</a></div>' +
           '<div><h3>Служебное</h3><a href="world.html">Разрез Кассия</a><a href="book.html#contents">Содержание</a><a href="about.html#credits">Изображения и лицензии</a><a href="about.html#project">О проекте</a><a href="about.html#sound">Настройки звука</a></div>' +
           '<div><h3>Колофон</h3><p class="footer-note">Демонстрационный артбук-архив. Книга, автор и город вымышлены. Фотографии взяты по свободным лицензиям, авторы указаны в кредитах.</p></div>' +
         "</div>" +
         '<div class="footer-bottom">' +
           '<p class="meta">© 2026 Илья Верес. Демонстрационные материалы.</p>' +
-          '<p class="meta">Кассий / 34 главы / слой 2</p>' +
+          '<p class="meta">Кассий / 23 из 34 глав / слой 2</p>' +
         "</div>" +
       "</div>" +
     "</footer>";
@@ -162,7 +162,11 @@
   function buildIndex() {
     var items = [];
     SITE.works.forEach(function (work) {
-      items.push({ title: work.title, type: "Книга", group: "Библиотека", url: work.id === "sol" ? "book.html" : "library.html", text: work.annotation + " " + work.type + " " + work.year });
+      items.push({ title: work.title, type: "Книга", group: "Библиотека", url: work.id === "sol" ? "book.html" : "library.html", text: [work.tagline, work.annotation, work.type, work.year, work.status].join(" ") });
+    });
+    items.push({ title: "Питч для издателей", type: "Книга", group: "Библиотека", url: "pitch.html", text: [SITE.meta.logline, SITE.meta.annotation, SITE.pitch.genre, SITE.pitch.audience, SITE.pitch.themes.join(" ")].join(" ") });
+    SITE.world.blocks.forEach(function (block) {
+      items.push({ title: block.title, type: "Мир", group: "Мир", url: "world.html", text: block.text });
     });
     SITE.chapters.forEach(function (chapter) {
       items.push({ title: chapter.n + ". " + chapter.title, type: "Глава", group: "Главы", url: "chapter.html?n=" + chapter.n, text: chapter.synopsis || "" });

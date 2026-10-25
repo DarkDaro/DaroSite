@@ -11,6 +11,7 @@ const ROOT = path.resolve(here, "..");
 const ROUTES = [
   "/index.html",
   "/book.html",
+  "/pitch.html",
   "/chapter.html?n=1",
   "/chapter.html?n=7",
   "/chapter.html?n=8",

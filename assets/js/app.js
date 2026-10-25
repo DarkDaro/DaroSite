@@ -233,7 +233,7 @@
 
     main.innerHTML =
       '<section class="cover"><div class="wrap">' +
-        '<div class="cover-top"><span class="meta">Архив Кассия / 2026</span><span class="meta">Роман / 34 главы / слой 2</span></div>' +
+        '<div class="cover-top"><span class="meta">Архив Кассия / 2026</span><span class="meta">Роман / 23 из 34 глав / слой 2</span></div>' +
         '<div class="signal-strip" aria-hidden="true"><div class="signal-track">' +
           ["Дождь по расписанию", "Соль в вентиляции", "Полотно активно", "Допуск отозван", "Точка впрыска 34", "Дождь по расписанию", "Соль в вентиляции", "Полотно активно", "Допуск отозван", "Точка впрыска 34"].map(function (text) { return "<span>" + text + "</span>"; }).join("") +
         "</div></div>" +
@@ -256,7 +256,7 @@
       '<section class="section"><div class="wrap">' +
         sectionHead("01 / роман", "Город, который дышит по расписанию") +
         '<div class="note"><div><p class="eyebrow">аннотация</p><p class="meta mt-16">Кассий, 2026</p><p class="meta">Роман в трёх частях</p><p class="meta">34 главы</p><p class="seam">' + esc(SITE.seams.home) + "</p></div>" +
-        '<div class="note-body"><p class="lead">' + esc(SITE.meta.annotation) + '</p><div class="card-grid card-grid--3 mt-32">' +
+        '<div class="note-body"><p class="lead">' + esc(SITE.meta.logline) + '</p><p class="mt-16">' + esc(SITE.meta.annotation) + '</p><div class="card-grid card-grid--3 mt-32">' +
           SITE.meta.blocks.map(function (block) { return infoCard(block.title, block.text); }).join("") +
         "</div></div></div>" +
       "</div></section>" +
@@ -295,7 +295,7 @@
   function renderLibrary() {
     var works = SITE.works.map(function (work) {
       var link = "book.html?work=" + encodeURIComponent(work.id);
-      return '<article class="work-card"><a class="work-cover" href="' + link + '" aria-label="Открыть: ' + esc(work.title) + '">' + U.cover(work.cover) + '</a><div class="work-body"><span class="eyebrow">' + esc(work.type) + " / " + esc(work.year) + "</span><h2>" + esc(work.title) + "</h2><p>" + esc(work.annotation) + '</p><div class="work-meta">' + badge(work.status) + '<span class="meta">' + esc(work.volume) + '</span></div><a class="link-arrow" href="' + link + '">Открыть запись</a></div></article>';
+      return '<article class="work-card"><a class="work-cover" href="' + link + '" aria-label="Открыть: ' + esc(work.title) + '">' + U.cover(work.cover) + '</a><div class="work-body"><span class="eyebrow">' + esc(work.type) + " / " + esc(work.year) + "</span><h2>" + esc(work.title) + "</h2>" + (work.tagline ? '<p class="work-tagline">' + esc(work.tagline) + "</p>" : "") + "<p>" + esc(work.annotation) + '</p><div class="work-meta">' + badge(work.status) + '<span class="meta">' + esc(work.volume) + '</span></div><a class="link-arrow" href="' + link + '">Открыть запись</a></div></article>';
     }).join("");
 
     var archive = [
@@ -306,7 +306,7 @@
       { label: "Вооружение", href: "weapons.html", count: SITE.weapons.length, text: "Служебное и кустарное" }
     ];
 
-    main.innerHTML = pageHead("Архив / библиотека", "Книги и материалы", "Роман, сборник, повесть и полевой справочник. Всё, что город успел издать, и то, что ещё лежит в наборе.", ["4 издания", "демонстрационные материалы"]) +
+    main.innerHTML = pageHead("Архив / библиотека", "Книги и материалы", "Роман, сборник, повесть и полевой справочник. Готовые тексты, черновики и материалы в наборе.", ["4 записи", "демонстрационные материалы"]) +
       '<section class="section--tight"><div class="wrap"><div class="library-grid">' + works + "</div></div></section>" +
       '<section class="section"><div class="wrap">' + sectionHead("01 / архив", "Материалы мира") +
         '<div class="index-list">' + archive.map(function (item, i) {
@@ -336,10 +336,10 @@
     var facts = [
       ["Автор", SITE.meta.author],
       ["Год", SITE.meta.year],
-      ["Объём", "34 главы, три части"],
-      ["Жанр", "биотех-детектив, мрачный триллер"],
+      ["Объём", work.volume],
+      ["Жанр", SITE.pitch.genre],
       ["Город", SITE.meta.city],
-      ["Статус", "издан"]
+      ["Статус", work.status]
     ].map(function (row) { return "<tr><th>" + esc(row[0]) + "</th><td>" + esc(row[1]) + "</td></tr>"; }).join("");
 
     var excerpt = SITE.chapters[0].text ? paragraphs(SITE.chapters[0].text.split(/\n\s*\n/).slice(0, 3).join("\n\n")) : '<p class="meta">Полный текст доступен для глав 1-' + published + '. Остальные главы открыты как фабулы.</p>';
@@ -348,18 +348,20 @@
       return '<article class="document-card"><div class="document-meta"><span class="eyebrow">' + esc(doc.label) + '</span><span class="meta">' + esc(doc.date) + '</span></div><h3>' + esc(doc.title) + '</h3><p>' + esc(doc.text) + '</p><a class="link-quiet" href="' + U.chapterUrl(doc.chapter) + '">Глава ' + doc.chapter + "</a></article>";
     }).join("");
 
-    main.innerHTML = pageHead("Роман / 2026", "Соляной протокол", SITE.meta.annotation, ["Илья Верес", "34 главы", "три части", "демонстрационный материал"]) +
+    main.innerHTML = pageHead("Роман / 2026", "Соляной протокол", SITE.meta.logline, [SITE.meta.author, work.status, published + " из 34 глав", "демонстрационный материал"]) +
       '<section class="section--tight"><div class="wrap book-hero"><div class="book-hero-cover">' + U.cover("sol") + "</div>" +
-        '<div class="book-hero-body"><p class="eyebrow">издание</p><h2>Роман в трёх частях</h2><p class="lead">Город на дамбе, «Соль-7» и женщина, которая подписала собственный приговор.</p>' +
-        '<div class="book-actions"><a class="link-arrow" href="chapter.html?n=1">Читать главу 1</a><a class="link-arrow" href="chapter.html?n=11">Читать главу 11</a><a class="link-arrow" href="#contents">Содержание</a><a class="link-arrow" href="library.html">Библиотека</a></div>' +
+        '<div class="book-hero-body"><p class="eyebrow">рукопись</p><h2>Роман в трёх частях</h2><p class="lead">Город на дамбе, «Соль-7» и женщина, которая подписала собственный приговор.</p><p class="book-logline">' + esc(SITE.meta.logline) + '</p>' +
+        '<div class="book-actions"><a class="link-arrow" href="chapter.html?n=1">Читать главу 1</a><a class="link-arrow" href="chapter.html?n=11">Читать главу 11</a><a class="link-arrow" href="#contents">Содержание</a><a class="link-arrow" href="pitch.html">Питч для издателей</a><a class="link-arrow" href="library.html">Библиотека</a></div>' +
         '<div class="book-facts">' + [
           ["Автор", SITE.meta.author], ["Год", SITE.meta.year], ["Объём", "34 главы"], ["Части", "3"], ["Город", SITE.meta.city], ["Доступно", published + " из 34 глав"]
         ].map(function (row) { return '<div class="book-fact"><span class="meta">' + esc(row[0]) + '</span><span class="book-fact-value">' + esc(row[1]) + "</span></div>"; }).join("") + "</div></div></div></section>" +
+      '<section class="section--tight"><div class="wrap synopsis-teaser"><div><p class="eyebrow">короткий синопсис</p><div class="synopsis-short mt-16">' + paragraphs(SITE.meta.synopsis.short) + '</div></div><div class="synopsis-actions"><a class="link-arrow" href="pitch.html">Полный синопсис и питч</a></div></div></section>' +
       '<section class="section"><div class="wrap">' + sectionHead("01 / аннотация", "О чём эта книга") +
-        '<div class="card-grid card-grid--3">' + SITE.meta.blocks.map(function (block) { return infoCard(block.title, block.text); }).join("") + "</div></div></section>" +
+        '<div class="card-grid card-grid--3">' + SITE.meta.blocks.map(function (block) { return infoCard(block.title, block.text); }).join("") + "</div>" +
+        '<div class="mt-32"><p class="eyebrow">мир романа</p><div class="card-grid card-grid--3 mt-16">' + ["upper-tier", "wet-quarter", "glass-dam"].map(function (id) { var item = findLocation(id); return item ? locationCard(item) : ""; }).join("") + "</div></div></div></section>" +
       '<section class="section" id="contents"><div class="wrap">' + sectionHead("02 / содержание", "Три части, 34 главы") +
         '<div class="part-stack">' + parts + "</div></div></section>" +
-      '<section class="section"><div class="wrap grid"><div class="book-edition"><p class="eyebrow">03 / издание</p><h2 class="mt-16">Выходные данные</h2><table class="id-table mt-24">' + facts + '</table><p class="meta mt-24">Демонстрационное издание. Текст, имена и события вымышлены.</p></div>' +
+      '<section class="section"><div class="wrap grid"><div class="book-edition"><p class="eyebrow">03 / рукопись</p><h2 class="mt-16">Данные рукописи</h2><table class="id-table mt-24">' + facts + '</table><p class="meta mt-24">Демонстрационная рукопись. Текст, имена и события вымышлены.</p></div>' +
         '<div class="book-excerpt"><p class="eyebrow">фрагмент</p><div class="excerpt mt-16">' + excerpt + '</div><div class="mt-24"><a class="link-arrow" href="chapter.html?n=1">Читать целиком</a></div></div></div></section>' +
       '<section class="section"><div class="wrap">' + sectionHead("04 / документы", "Бумажный след") +
         '<div class="document-grid">' + documents + "</div></div></section>" +
@@ -372,10 +374,10 @@
     var link = work.id === "sol" ? "book.html" : "book.html?work=" + encodeURIComponent(work.id);
     main.innerHTML = pageHead(work.type + " / " + work.year, work.title, work.annotation, [SITE.meta.author, work.status, work.volume, "демонстрационный материал"]) +
       '<section class="section--tight"><div class="wrap book-hero"><div class="book-hero-cover">' + U.cover(work.cover) + "</div>" +
-        '<div class="book-hero-body"><p class="eyebrow">издание</p><h2>' + esc(work.type) + " / " + esc(work.year) + "</h2><p class=\"lead\">" + esc(work.annotation) + "</p>" +
+        '<div class="book-hero-body"><p class="eyebrow">запись</p><h2>' + esc(work.type) + " / " + esc(work.year) + "</h2><p class=\"lead\">" + esc(work.annotation) + "</p>" +
         '<div class="book-actions"><a class="link-arrow" href="library.html">В библиотеку</a>' + (work.id === "sol" ? '<a class="link-arrow" href="chapter.html?n=1">Читать главу 1</a>' : '<a class="link-arrow" href="book.html">Соляной протокол</a>') + "</div>" +
         '<div class="book-facts"><div class="book-fact"><span class="meta">Автор</span><span class="book-fact-value">' + esc(SITE.meta.author) + '</span></div><div class="book-fact"><span class="meta">Статус</span><span class="book-fact-value">' + esc(work.status) + '</span></div><div class="book-fact"><span class="meta">Объём</span><span class="book-fact-value">' + esc(work.volume) + '</span></div><div class="book-fact"><span class="meta">Год</span><span class="book-fact-value">' + esc(work.year) + "</span></div></div></div></div></section>" +
-      '<section class="section"><div class="wrap"><div class="note"><div><p class="eyebrow">примечание</p><p class="meta mt-16">' + esc(work.status) + "</p></div><div class=\"note-body\"><p>Полный текст этого издания в демонстрационном архиве не опубликован. Запись содержит аннотацию, выходные данные и обложку. Основной роман «Соляной протокол» доступен в разделе «Главы».</p><div class=\"mt-24\"><a class=\"link-arrow\" href=\"" + link + "\">Открыть запись</a></div></div></div></div></section>" +
+      '<section class="section"><div class="wrap"><div class="note"><div><p class="eyebrow">примечание</p><p class="meta mt-16">' + esc(work.status) + "</p></div><div class=\"note-body\"><p>Полный текст этой записи в демонстрационном архиве не опубликован. Запись содержит аннотацию, данные рукописи и обложку. Основной роман «Соляной протокол» доступен в разделе «Главы».</p><div class=\"mt-24\"><a class=\"link-arrow\" href=\"" + link + "\">Открыть запись</a></div></div></div></div></section>" +
       seamBlock(SITE.seams.book);
 
     document.title = work.title + " / Соляной протокол";
@@ -463,8 +465,18 @@
     var timeline = SITE.timeline.map(function (item) {
       return '<article class="timeline-item"><div class="timeline-day"><span class="num">' + esc(item.day) + '</span><span class="meta">' + esc(item.date) + '</span></div><div class="timeline-body"><h3>' + esc(item.title) + '</h3><p>' + esc(item.text) + '</p><a class="link-quiet" href="' + U.chapterUrl(item.chapter) + '">Глава ' + item.chapter + "</a></div></article>";
     }).join("");
+    var worldBlocks = SITE.world.blocks.map(function (block) {
+      var found = findEntity(block.link);
+      return '<a class="world-primer-card" href="' + (found ? entityUrl(block.link) : "world.html") + '"><span class="eyebrow">' + esc(found ? entityKindLabel(found.kind) : "Мир") + '</span><h3>' + esc(block.title) + '</h3><p>' + esc(block.text) + '</p><span class="meta">' + (found ? esc(found.item.name) : "Кассий") + "</span></a>";
+    }).join("");
+    var worldRules = SITE.world.rules.map(function (rule, i) {
+      return '<li><span class="num">' + pad(i + 1) + '</span><p>' + esc(rule) + "</p></li>";
+    }).join("");
 
-    main.innerHTML = pageHead("Мир / Кассий", "Разрез города", "Кассий стоит на дамбе и соляных полях. Верхний ярус дышит отдельно, нижний платит за фильтры, а между ними лежит слой, который город называет порядком.", ["5 ярусов", "10 локаций", "7 организаций"]) +
+    main.innerHTML = pageHead("Мир / Кассий", "Разрез города", SITE.world.intro, ["5 ярусов", "10 локаций", "7 организаций"]) +
+      '<section class="section--tight"><div class="wrap">' + sectionHead("00 / обзор", "Как устроен Кассий") +
+        '<div class="world-primer">' + worldBlocks + "</div>" +
+        '<div class="world-rules"><p class="eyebrow">правила мира</p><ol class="world-rule-list">' + worldRules + "</ol></div></div></section>" +
       '<section class="section--tight"><div class="wrap"><div class="cross-section">' +
         '<svg viewBox="0 0 1200 560" role="img" aria-label="Схематический разрез Кассия: море, дамба, верхний ярус, мокрый квартал, станция Ноль и слой Полотна">' +
           '<defs>' +
@@ -997,14 +1009,62 @@
     var volume = window.SolSound && window.SolSound.getVolume ? Math.round(window.SolSound.getVolume() * 100) : 70;
 
     main.innerHTML = pageHead("Архив / автор", "Илья Верес", "Пишет мокрый биотех-детектив и мрачную фантастику. Живёт в городе, где тоже идёт дождь по расписанию.", ["демонстрационный автор", "1 роман", "1 повесть", "1 сборник", "1 артбук"]) +
-      '<section class="section"><div class="wrap author-grid"><div class="author-portrait"><span class="author-monogram" aria-hidden="true">ИВ</span><p class="meta mt-8">фотография автора не публикуется</p></div><div class="author-body"><p class="eyebrow">кратко</p><p class="lead mt-16">Илья Верес родился в портовом городе, который позже стал Кассием. Работал грузчиком, техником связи и архивистом. В 2026 году вышли сборник «Мокрый след» и роман «Соляной протокол». Книга писалась как архив: с документами, досье и служебными пометками на полях.</p><p>Верес не любит интервью и не появляется на фотографиях. В архиве нет ни одного его портрета. Это не мистификация, а привычка: он считает, что автор должен быть слышен, а не виден.</p><p class="quote">Я пишу не о будущем. Я пишу о настоящем, у которого отключили рекламу.</p><div class="note-sign">Илья Верес / Кассий</div></div></div></section>' +
+      '<section class="section"><div class="wrap author-grid"><div class="author-portrait"><span class="author-monogram" aria-hidden="true">ИВ</span><p class="meta mt-8">фотография автора не публикуется</p></div><div class="author-body"><p class="eyebrow">кратко</p><p class="lead mt-16">Илья Верес родился в портовом городе, который позже стал Кассием. Работал грузчиком, техником связи и архивистом. В 2026 году вышли сборник «Мокрый след» и роман «Соляной протокол». Книга писалась как архив: с документами, досье и служебными пометками на полях.</p><p>Верес не любит интервью и не появляется на фотографиях. В архиве нет ни одного его портрета. Это не мистификация, а привычка: он считает, что автор должен быть слышен, а не виден.</p><p class="quote">Я пишу не о будущем. Я пишу о настоящем, у которого отключили рекламу.</p><div class="note-sign">Илья Верес / Кассий</div><div class="sub-actions"><a class="link-arrow" href="pitch.html">Питч для издателей</a></div></div></div></section>' +
       '<section class="section" id="project"><div class="wrap"><div class="section-head"><span class="num">01 / проект</span><h2>Как устроен архив</h2></div><div class="note"><div><p class="meta">офлайн</p><p class="meta">без сервера</p><p class="meta">без сбора данных</p></div><div class="note-body"><p>Это демонстрационный артбук-архив, а не магазин и не промо-страница. Здесь нет цен, покупок, подписок, отзывов и счётчиков. Сайт открывается с диска, не требует установки и не делает внешних запросов.</p><p>Шрифты Cormorant, Literata и IBM Plex Mono лежат в файлах страницы. Поиск работает на локальном Fuse.js. Все изображения приведены к локальным размерам и тонированы. Ссылки на источники открываются только по нажатию.</p><p>Книга, автор, город и персонажи вымышлены. Совпадения с реальными людьми и организациями случайны. Фотографии взяты по свободным лицензиям, авторы указаны ниже.</p></div></div></div></section>' +
       '<section class="section" id="credits"><div class="wrap"><div class="section-head"><span class="num">02 / кредиты</span><h2>Изображения и лицензии</h2></div><div class="credit-list">' + credits + '</div><p class="meta mt-24">Фотографии тонированы и кадрированы для демонстрационного макета. Оригиналы доступны по ссылкам «источник».</p></div></section>' +
       '<section class="section"><div class="wrap"><div class="section-head"><span class="num">03 / техника</span><h2>Что внутри</h2></div><div class="card-grid card-grid--3"><div class="info-card"><h3>Шрифты</h3><p class="meta meta--plain">Cormorant, Literata, IBM Plex Mono. SIL Open Font License, файл assets/fonts/OFL.txt.</p></div><div class="info-card"><h3>Поиск</h3><p class="meta meta--plain">Fuse.js 7.5.0, MIT. Индекс собирается на клиенте из локального файла данных.</p></div><div class="info-card"><h3>Сборка</h3><p class="meta meta--plain">HTML, CSS и обычный JavaScript. Без сборщика и без сетевых запросов. Данные лежат в локальном файле data.js и загружаются вместе со страницей.</p></div></div></div></section>' +
-      '<section class="section" id="sound"><div class="wrap"><div class="section-head"><span class="num">04 / звук</span><h2>Музыка, эффекты и озвучка</h2></div><div class="note"><div><p class="meta">музыка</p><p class="meta">эффекты</p><p class="meta">голос</p></div><div class="note-body"><p>Музыка включается после первого клика по странице: браузер не разрешает звук до действия пользователя. Кнопка «Звук» в шапке выключает и включает всё сразу. Выбор запоминается в браузере.</p><p>Эффекты работают на кнопках, вкладках, меню и поиске. Озвучка пока экспериментальная: кнопка «Озвучить» на главах и в досье читает текст локальным голосом браузера. Качество зависит от русского голоса Windows. Если русского голоса нет, браузер возьмёт системный.</p><p class="meta">Общая громкость музыки, эффектов и голоса.</p><div class="volume-row"><label for="sound-volume">Громкость</label><input id="sound-volume" class="volume-slider" type="range" min="0" max="100" step="1" value="' + volume + '" data-volume aria-label="Общая громкость"><output id="sound-volume-value" class="volume-value" for="sound-volume" data-volume-value>' + volume + '%</output></div><div class="sub-actions"><button class="filter-toggle" type="button" data-sound-test="music">Проверить музыку</button><button class="filter-toggle" type="button" data-sound-test="effect">Проверить эффект</button><button class="filter-toggle" type="button" data-sound-test="voice">Проверить голос</button></div></div></div></div></section>' +
+      '<section class="section" id="publishers"><div class="wrap"><div class="section-head"><span class="num">04 / издателям</span><h2>Рукопись и материалы</h2></div><div class="note"><div><p class="meta">рукопись</p><p class="meta">23 из 34 глав</p><p class="meta">47 753 слова</p></div><div class="note-body"><p>Для издателей собрана отдельная страница: логлайн, короткий и полный синопсис, обзор мира, темы, аудитория и факт-лист. Её можно распечатать или сохранить в PDF из браузера.</p><div class="sub-actions"><a class="link-arrow" href="pitch.html">Открыть питч</a></div></div></div></div></section>' +
+      '<section class="section" id="sound"><div class="wrap"><div class="section-head"><span class="num">05 / звук</span><h2>Музыка, эффекты и озвучка</h2></div><div class="note"><div><p class="meta">музыка</p><p class="meta">эффекты</p><p class="meta">голос</p></div><div class="note-body"><p>Музыка включается после первого клика по странице: браузер не разрешает звук до действия пользователя. Кнопка «Звук» в шапке выключает и включает всё сразу. Выбор запоминается в браузере.</p><p>Эффекты работают на кнопках, вкладках, меню и поиске. Озвучка пока экспериментальная: кнопка «Озвучить» на главах и в досье читает текст локальным голосом браузера. Качество зависит от русского голоса Windows. Если русского голоса нет, браузер возьмёт системный.</p><p class="meta">Общая громкость музыки, эффектов и голоса.</p><div class="volume-row"><label for="sound-volume">Громкость</label><input id="sound-volume" class="volume-slider" type="range" min="0" max="100" step="1" value="' + volume + '" data-volume aria-label="Общая громкость"><output id="sound-volume-value" class="volume-value" for="sound-volume" data-volume-value>' + volume + '%</output></div><div class="sub-actions"><button class="filter-toggle" type="button" data-sound-test="music">Проверить музыку</button><button class="filter-toggle" type="button" data-sound-test="effect">Проверить эффект</button><button class="filter-toggle" type="button" data-sound-test="voice">Проверить голос</button></div></div></div></div></section>' +
       seamBlock(SITE.seams.about);
 
     document.title = "Илья Верес / Соляной протокол";
+  }
+
+  /* Питч */
+
+  function renderPitch() {
+    var m = SITE.meta;
+    var p = SITE.pitch;
+    var facts = p.facts.map(function (row) {
+      return "<tr><th>" + esc(row.label) + "</th><td>" + esc(row.value) + "</td></tr>";
+    }).join("");
+    var structure = p.structure.map(function (row) {
+      return "<tr><th>" + esc(row.label) + "</th><td>" + esc(row.value) + "</td></tr>";
+    }).join("");
+    var themes = p.themes.map(function (theme) { return "<li>" + esc(theme) + "</li>"; }).join("");
+    var orientations = p.orientations.map(function (item) { return '<span class="meta">' + esc(item) + "</span>"; }).join("");
+    var worldBlocks = SITE.world.blocks.map(function (block) {
+      var found = findEntity(block.link);
+      return '<a class="pitch-world-card" href="' + (found ? entityUrl(block.link) : "world.html") + '"><h3>' + esc(block.title) + "</h3><p>" + esc(block.text) + "</p></a>";
+    }).join("");
+    var rules = SITE.world.rules.map(function (rule) { return "<li>" + esc(rule) + "</li>"; }).join("");
+    var synopsis = m.synopsis.full.map(function (part) {
+      return '<div class="pitch-synopsis-part"><h3>' + esc(part.title) + "</h3>" + paragraphs(part.text) + "</div>";
+    }).join("");
+
+    main.innerHTML = pageHead("Для издателей / питч", "Соляной протокол", m.logline, [p.status, p.volume, p.genre]) +
+      '<section class="section--tight"><div class="wrap pitch-doc">' +
+        '<div class="pitch-actions"><button type="button" class="filter-toggle" data-print>Печать / PDF</button><a class="link-arrow" href="book.html">Открыть книгу</a><a class="link-arrow" href="world.html">Мир</a></div>' +
+        '<div class="pitch-block pitch-letter"><p class="eyebrow">письмо редактору</p><p class="lead">' + esc(p.letter) + "</p></div>" +
+        '<div class="pitch-block"><p class="eyebrow">01 / логлайн</p><p class="pitch-logline">' + esc(m.logline) + "</p></div>" +
+        '<div class="pitch-block"><p class="eyebrow">02 / аннотация</p>' + paragraphs(m.annotation) + "</div>" +
+        '<div class="pitch-block"><p class="eyebrow">03 / короткий синопсис</p>' + paragraphs(m.synopsis.short) + "</div>" +
+        '<div class="pitch-block"><p class="eyebrow">04 / полный синопсис</p><p class="pitch-warning">Дальше спойлеры, включая финал.</p>' + synopsis + '<p class="pitch-ending">' + esc(p.endingNote) + "</p></div>" +
+        '<div class="pitch-block"><p class="eyebrow">05 / структура и готовность</p><table class="id-table pitch-facts">' + structure + '</table><div class="pitch-split mt-24"><div><p class="eyebrow">готово</p><p>' + esc(p.ready) + '</p></div><div><p class="eyebrow">осталось</p><p>' + esc(p.remaining) + "</p></div></div></div>" +
+        '<div class="pitch-block"><p class="eyebrow">06 / мир</p><p class="lead">' + esc(SITE.world.intro) + '</p><div class="pitch-world">' + worldBlocks + '</div><div class="pitch-rules"><p class="eyebrow">правила</p><ol>' + rules + "</ol></div></div>" +
+        '<div class="pitch-block pitch-split"><div><p class="eyebrow">07 / темы</p><ul class="pitch-list">' + themes + '</ul></div><div><p class="eyebrow">аудитория</p><p>' + esc(p.audience) + '</p><div class="pitch-tags">' + orientations + "</div></div></div>" +
+        '<div class="pitch-block"><p class="eyebrow">08 / позиционирование</p><p>' + esc(p.positioning) + '</p><p class="meta mt-16">' + esc(p.whyNow) + "</p></div>" +
+        '<div class="pitch-block"><p class="eyebrow">09 / факты</p><table class="id-table pitch-facts">' + facts + "</table></div>" +
+        '<div class="pitch-block"><p class="eyebrow">10 / автор</p><p>' + esc(p.authorLong) + '</p><div class="sub-actions"><a class="link-arrow" href="about.html">Об авторе</a></div></div>' +
+        '<div class="pitch-block"><p class="eyebrow">11 / контакт</p><p>' + esc(p.contact) + '</p><p class="meta mt-16">' + esc(p.rights) + "</p></div>" +
+        '<div class="pitch-actions pitch-actions--bottom"><button type="button" class="filter-toggle" data-print>Печать / PDF</button><a class="link-arrow" href="book.html">Открыть книгу</a><a class="link-arrow" href="world.html">Мир</a></div>' +
+      "</div></section>" +
+      seamBlock(SITE.seams.book);
+
+    document.title = "Питч для издателей / Соляной протокол";
+    main.querySelectorAll("[data-print]").forEach(function (button) {
+      button.addEventListener("click", function () { window.print(); });
+    });
   }
 
   /* Досье */
@@ -1144,6 +1204,7 @@
     else if (page === "weapons") renderCatalogue("weapon");
     else if (page === "gallery") renderGallery();
     else if (page === "about") renderAbout();
+    else if (page === "pitch") renderPitch();
     else if (page === "dossier") renderDossier();
     else notFound();
     reveal();

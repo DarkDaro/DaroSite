@@ -107,6 +107,68 @@ function checkEntities(site) {
   for (const term of site.glossary) {
     if (!all.has(term.link)) issues.push("glossary " + term.term + ": missing link " + term.link);
   }
+  for (const block of site.world.blocks) {
+    if (!all.has(block.link)) issues.push("world block " + block.title + ": missing link " + block.link);
+  }
+}
+
+function checkBookLayer(site) {
+  const prose = [];
+  const add = (label, value, minimum) => {
+    if (typeof value !== "string" || value.trim().length < minimum) {
+      issues.push(label + ": too short");
+      return;
+    }
+    prose.push([label, value]);
+  };
+  add("meta.logline", site.meta.logline, 120);
+  add("meta.annotation", site.meta.annotation, 500);
+  add("meta.synopsis.short", site.meta.synopsis && site.meta.synopsis.short, 600);
+  const full = site.meta.synopsis && site.meta.synopsis.full;
+  if (!Array.isArray(full) || full.length !== 3) {
+    issues.push("meta.synopsis.full: expected 3 parts");
+  } else {
+    full.forEach((part, index) => {
+      add("synopsis part " + (index + 1), part.text, 800);
+      if (!part.title) issues.push("synopsis part " + (index + 1) + ": missing title");
+    });
+  }
+  if (!site.world || !Array.isArray(site.world.blocks) || site.world.blocks.length !== 6) issues.push("world.blocks: expected 6");
+  if (!site.world || !Array.isArray(site.world.rules) || site.world.rules.length !== 8) issues.push("world.rules: expected 8");
+  add("world.intro", site.world && site.world.intro, 120);
+  (site.world.blocks || []).forEach((block, index) => {
+    add("world block " + (index + 1), block.text, 240);
+    if (!block.title) issues.push("world block " + (index + 1) + ": missing title");
+  });
+  if (!site.pitch) {
+    issues.push("pitch: missing");
+  } else {
+    for (const field of ["genre", "status", "volume", "audience", "whyNow", "authorShort", "authorLong", "contact"]) {
+      if (!site.pitch[field]) issues.push("pitch: missing " + field);
+    }
+    add("pitch.letter", site.pitch.letter, 400);
+    add("pitch.positioning", site.pitch.positioning, 300);
+    add("pitch.ready", site.pitch.ready, 120);
+    add("pitch.remaining", site.pitch.remaining, 100);
+    add("pitch.endingNote", site.pitch.endingNote, 100);
+    add("pitch.rights", site.pitch.rights, 100);
+    if (!Array.isArray(site.pitch.themes) || site.pitch.themes.length < 3) issues.push("pitch.themes: expected at least 3");
+    if (!Array.isArray(site.pitch.facts) || site.pitch.facts.length < 8) issues.push("pitch.facts: expected at least 8");
+    if (!Array.isArray(site.pitch.structure) || site.pitch.structure.length < 4) issues.push("pitch.structure: expected at least 4 rows");
+    for (const row of site.pitch.structure || []) if (!row.label || !row.value) issues.push("pitch.structure: incomplete row");
+    for (const fact of site.pitch.facts || []) if (!fact.label || !fact.value) issues.push("pitch.facts: incomplete row");
+    if (site.pitch.status !== site.meta.status) issues.push("pitch.status and meta.status differ");
+    if (site.works[0].status !== "рукопись") issues.push("main work status must be рукопись");
+  }
+  for (const work of site.works) {
+    add("work " + work.id + " annotation", work.annotation, 180);
+    if (!work.tagline) issues.push("work " + work.id + ": missing tagline");
+    if (!work.status || !work.volume) issues.push("work " + work.id + ": missing status or volume");
+  }
+  for (const part of site.parts) add("part " + part.id + " summary", part.summary, 120);
+  for (const [label, value] of prose) {
+    if (value.includes("\u2014")) issues.push(label + ": contains an em dash");
+  }
 }
 
 function checkAssets(site) {
@@ -137,6 +199,7 @@ function main() {
   checkCounts(site);
   checkChapters(site);
   checkEntities(site);
+  checkBookLayer(site);
   checkAssets(site);
   if (issues.length) {
     console.error("Проверка не пройдена. Ошибок:", issues.length);
