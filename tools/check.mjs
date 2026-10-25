@@ -30,7 +30,7 @@ function checkCounts(site) {
   const expected = {
     chapters: 34,
     documents: 12,
-    timeline: 22,
+    timeline: 27,
     characters: 11,
     locations: 10,
     corporations: 7,

@@ -124,14 +124,14 @@ async function main() {
     const fontAfter = await page.evaluate(() => parseFloat(getComputedStyle(document.querySelector(".reader-text")).fontSize));
     check("Шрифт читалки увеличивается", fontAfter > fontBefore, fontBefore + " -> " + fontAfter);
 
-    const voiceChapter = await page.evaluate(() => ({
-      button: !!document.querySelector("[data-voice-chapter]"),
-      label: document.querySelector("[data-voice-chapter]")?.textContent || "",
+    const readerControls = await page.evaluate(() => ({
+      print: !!document.querySelector(".reader-tools [data-print]"),
+      voice: !!document.querySelector(".reader-tools [data-voice-chapter]"),
       effect: typeof window.SolSound?.effect === "function",
       speak: typeof window.SolSound?.speak === "function"
     }));
-    check("Кнопка озвучки главы есть", voiceChapter.button, voiceChapter.label);
-    check("Эффекты и озвучка доступны", voiceChapter.effect && voiceChapter.speak);
+    check("Кнопки печати и озвучки скрыты", !readerControls.print && !readerControls.voice, JSON.stringify(readerControls));
+    check("Эффекты и озвучка доступны", readerControls.effect && readerControls.speak);
 
     await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
     await page.waitForTimeout(400);

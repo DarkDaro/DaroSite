@@ -134,6 +134,12 @@
     return '<a class="toc-item" href="' + U.chapterUrl(chapter.n) + '"><span class="n">' + pad(chapter.n) + '</span><span class="t">' + esc(chapter.title) + '</span><span class="s">' + esc(chapter.status) + "</span></a>";
   }
 
+  function latestPublishedChapter() {
+    return SITE.chapters.reduce(function (max, chapter) {
+      return chapter.status === "опубликовано" ? Math.max(max, chapter.n) : max;
+    }, 1);
+  }
+
   function infoCard(title, text) {
     return '<article class="info-card"><h3>' + esc(title) + '</h3><p class="meta meta--plain">' + esc(text) + "</p></article>";
   }
@@ -233,7 +239,7 @@
 
     main.innerHTML =
       '<section class="cover"><div class="wrap">' +
-        '<div class="cover-top"><span class="meta">Архив Кассия / 2026</span><span class="meta">Роман / 23 из 34 глав / слой 2</span></div>' +
+        '<div class="cover-top"><span class="meta">Архив Кассия / 2026</span><span class="meta">Роман / 30 из 34 глав / слой 2</span></div>' +
         '<div class="signal-strip" aria-hidden="true"><div class="signal-track">' +
           ["Дождь по расписанию", "Соль в вентиляции", "Полотно активно", "Допуск отозван", "Точка впрыска 34", "Дождь по расписанию", "Соль в вентиляции", "Полотно активно", "Допуск отозван", "Точка впрыска 34"].map(function (text) { return "<span>" + text + "</span>"; }).join("") +
         "</div></div>" +
@@ -327,6 +333,7 @@
       return;
     }
     var published = SITE.chapters.filter(function (chapter) { return chapter.status === "опубликовано"; }).length;
+    var latest = latestPublishedChapter();
 
     var parts = SITE.parts.map(function (part) {
       var chapters = SITE.chapters.filter(function (chapter) { return chapter.part === Number(part.id.replace("part-", "")); });
@@ -342,7 +349,7 @@
       ["Статус", work.status]
     ].map(function (row) { return "<tr><th>" + esc(row[0]) + "</th><td>" + esc(row[1]) + "</td></tr>"; }).join("");
 
-    var excerpt = SITE.chapters[0].text ? paragraphs(SITE.chapters[0].text.split(/\n\s*\n/).slice(0, 3).join("\n\n")) : '<p class="meta">Полный текст доступен для глав 1-' + published + '. Остальные главы открыты как фабулы.</p>';
+    var excerpt = SITE.chapters[0].text ? paragraphs(SITE.chapters[0].text.split(/\n\s*\n/).slice(0, 3).join("\n\n")) : '<p class="meta">Полный текст доступен для глав 1-' + latest + '. Остальные главы открыты как фабулы.</p>';
 
     var documents = SITE.documents.map(function (doc) {
       return '<article class="document-card"><div class="document-meta"><span class="eyebrow">' + esc(doc.label) + '</span><span class="meta">' + esc(doc.date) + '</span></div><h3>' + esc(doc.title) + '</h3><p>' + esc(doc.text) + '</p><a class="link-quiet" href="' + U.chapterUrl(doc.chapter) + '">Глава ' + doc.chapter + "</a></article>";
@@ -351,16 +358,18 @@
     main.innerHTML = pageHead("Роман / 2026", "Соляной протокол", SITE.meta.logline, [SITE.meta.author, work.status, published + " из 34 глав", "демонстрационный материал"]) +
       '<section class="section--tight"><div class="wrap book-hero"><div class="book-hero-cover">' + U.cover("sol") + "</div>" +
         '<div class="book-hero-body"><p class="eyebrow">рукопись</p><h2>Роман в трёх частях</h2><p class="lead">Город на дамбе, «Соль-7» и женщина, которая подписала собственный приговор.</p><p class="book-logline">' + esc(SITE.meta.logline) + '</p>' +
-        '<div class="book-actions"><a class="link-arrow" href="chapter.html?n=1">Читать главу 1</a><a class="link-arrow" href="chapter.html?n=11">Читать главу 11</a><a class="link-arrow" href="#contents">Содержание</a><a class="link-arrow" href="pitch.html">Питч для издателей</a><a class="link-arrow" href="library.html">Библиотека</a></div>' +
+        '<div class="book-actions"><a class="link-arrow" href="chapter.html?n=1">Читать главу 1</a><a class="link-arrow" href="chapter.html?n=' + latest + '">Читать главу ' + latest + '</a><a class="link-arrow" href="#contents">Содержание</a><a class="link-arrow" href="pitch.html">Питч для издателей</a><a class="link-arrow" href="library.html">Библиотека</a></div>' +
         '<div class="book-facts">' + [
-          ["Автор", SITE.meta.author], ["Год", SITE.meta.year], ["Объём", "34 главы"], ["Части", "3"], ["Город", SITE.meta.city], ["Доступно", published + " из 34 глав"]
+          ["Автор", SITE.meta.author], ["Год", SITE.meta.year], ["План", "34 главы"], ["Части", "3"], ["Город", SITE.meta.city], ["Доступно", published + " из 34 глав"]
         ].map(function (row) { return '<div class="book-fact"><span class="meta">' + esc(row[0]) + '</span><span class="book-fact-value">' + esc(row[1]) + "</span></div>"; }).join("") + "</div></div></div></section>" +
       '<section class="section--tight"><div class="wrap synopsis-teaser"><div><p class="eyebrow">короткий синопсис</p><div class="synopsis-short mt-16">' + paragraphs(SITE.meta.synopsis.short) + '</div></div><div class="synopsis-actions"><a class="link-arrow" href="pitch.html">Полный синопсис и питч</a></div></div></section>' +
       '<section class="section"><div class="wrap">' + sectionHead("01 / аннотация", "О чём эта книга") +
         '<div class="card-grid card-grid--3">' + SITE.meta.blocks.map(function (block) { return infoCard(block.title, block.text); }).join("") + "</div>" +
         '<div class="mt-32"><p class="eyebrow">мир романа</p><div class="card-grid card-grid--3 mt-16">' + ["upper-tier", "wet-quarter", "glass-dam"].map(function (id) { var item = findLocation(id); return item ? locationCard(item) : ""; }).join("") + "</div></div></div></section>" +
-      '<section class="section" id="contents"><div class="wrap">' + sectionHead("02 / содержание", "Три части, 34 главы") +
-        '<div class="part-stack">' + parts + "</div></div></section>" +
+      '<section class="section" id="contents"><div class="wrap">' + sectionHead("02 / содержание", "Три части, " + published + " из 34 глав") +
+        '<div class="part-stack">' + parts + "</div>" +
+        (latest < 34 ? '<p class="meta mt-24">Опубликованы главы 1-' + latest + '. Главы ' + (latest + 1) + '-34 остаются в плане.</p>' : "") +
+        "</div></section>" +
       '<section class="section"><div class="wrap grid"><div class="book-edition"><p class="eyebrow">03 / рукопись</p><h2 class="mt-16">Данные рукописи</h2><table class="id-table mt-24">' + facts + '</table><p class="meta mt-24">Демонстрационная рукопись. Текст, имена и события вымышлены.</p></div>' +
         '<div class="book-excerpt"><p class="eyebrow">фрагмент</p><div class="excerpt mt-16">' + excerpt + '</div><div class="mt-24"><a class="link-arrow" href="chapter.html?n=1">Читать целиком</a></div></div></div></section>' +
       '<section class="section"><div class="wrap">' + sectionHead("04 / документы", "Бумажный след") +
@@ -398,16 +407,19 @@
     var next = findChapter(n + 1);
     var notes = chapterNotes(chapter);
     var full = !!text;
-    var published = SITE.chapters.filter(function (item) { return item.status === "опубликовано"; }).length;
+    var latest = latestPublishedChapter();
     var beats = chapter.beats && chapter.beats.length
       ? '<div class="stub-beats"><p class="eyebrow">фабула</p><ol class="beats">' + chapter.beats.map(function (beat) { return "<li><p>" + esc(beat) + "</p></li>"; }).join("") + "</ol></div>"
       : "";
     var body = full
       ? '<div class="reader-text" id="reader-text">' + paragraphs(text) + "</div>"
-      : '<div class="empty"><h3>Глава в работе</h3><p>' + esc(chapter.synopsis || "Синопсис пока не написан.") + "</p>" + beats + '<p class="meta mt-16">Полный текст доступен для глав 1-' + published + '. Остальные главы открыты как фабулы с опорными точками сюжета.</p><div class="actions"><a class="link-arrow" href="chapter.html?n=1">Глава 1</a><a class="link-arrow" href="chapter.html?n=11">Глава 11</a><a class="link-arrow" href="book.html#contents">К содержанию</a></div></div>';
+      : '<div class="empty"><h3>Глава в работе</h3><p>' + esc(chapter.synopsis || "Синопсис пока не написан.") + "</p>" + beats + '<p class="meta mt-16">Полный текст доступен для глав 1-' + latest + '. Остальные главы открыты как фабулы с опорными точками сюжета.</p><div class="actions"><a class="link-arrow" href="chapter.html?n=1">Глава 1</a><a class="link-arrow" href="chapter.html?n=' + latest + '">Глава ' + latest + '</a><a class="link-arrow" href="book.html#contents">К содержанию</a></div></div>';
 
     main.innerHTML = '<header class="reader-head"><div class="wrap"><p class="chapter-no">' + esc(part.title) + " / глава " + chapter.n + '</p><h1>' + esc(chapter.title) + '</h1><p class="meta">' + esc(chapter.status) + " / " + (full ? textWords(text) + " слов / " + readingTime(text) + " мин" : "фабула") + " / POV " + esc(chapter.pov) + " / День " + esc(chapter.day) + " / демонстрационный текст</p></div></header>" +
-      '<div class="wrap"><div class="reader-tools"><div class="tool-field"><label>Шрифт</label><button type="button" class="font-step" data-font="-1" aria-label="Уменьшить шрифт">A-</button><button type="button" class="font-step" data-font="1" aria-label="Увеличить шрифт">A+</button></div><div class="tool-field"><label>Текст</label><span class="mono">' + (full ? "полный" : "фабула") + '</span></div><div class="tool-field"><label>Прогресс</label><span class="mono" id="reader-progress-label">0%</span></div><button type="button" class="filter-toggle" data-print>Печать</button>' + (full ? chapterVoiceButton(chapter.n) : "") + '<div class="toolbar-spacer"></div><a class="link-quiet" href="book.html#contents">К содержанию</a></div>' +
+      '<div class="wrap"><div class="reader-tools"><div class="tool-field"><label>Шрифт</label><button type="button" class="font-step" data-font="-1" aria-label="Уменьшить шрифт">A-</button><button type="button" class="font-step" data-font="1" aria-label="Увеличить шрифт">A+</button></div><div class="tool-field"><label>Текст</label><span class="mono">' + (full ? "полный" : "фабула") + '</span></div><div class="tool-field"><label>Прогресс</label><span class="mono" id="reader-progress-label">0%</span></div>' +
+      // '<button type="button" class="filter-toggle" data-print>Печать</button>' +
+      // (full ? chapterVoiceButton(chapter.n) : "") +
+      '<div class="toolbar-spacer"></div><a class="link-quiet" href="book.html#contents">К содержанию</a></div>' +
       '</div><div class="reader-progress" aria-hidden="true"><span id="reader-progress-bar"></span></div>' +
       '<div class="wrap reader-layout"><div>' + body + '<nav class="reader-nav">' + (prev ? '<a class="link-arrow" href="' + U.chapterUrl(prev.n) + '">' + pad(prev.n) + " / " + esc(prev.title) + "</a>" : "<span></span>") + (next ? '<a class="link-arrow" href="' + U.chapterUrl(next.n) + '">' + pad(next.n) + " / " + esc(next.title) + "</a>" : "<span></span>") + "</nav></div>" +
       '<aside class="reader-notes"><p class="eyebrow">пометки</p>' + (notes.length ? notes.map(function (note) { return '<div class="note-item"><span class="note-no">' + esc(note.type) + '</span><p><a class="link" href="' + note.href + '">' + esc(note.title) + "</a></p></div>"; }).join("") : '<p class="meta mt-16">К этой главе нет отдельных пометок.</p>') + '<p class="seam">' + esc(chapter.seam || SITE.seams.book) + "</p></aside></div>" +
@@ -430,8 +442,8 @@
     main.querySelectorAll("[data-font]").forEach(function (button) {
       button.addEventListener("click", function () { setSize(size + Number(button.dataset.font)); });
     });
-    var printButton = main.querySelector("[data-print]");
-    if (printButton) printButton.addEventListener("click", function () { window.print(); });
+    // var printButton = main.querySelector("[data-print]");
+    // if (printButton) printButton.addEventListener("click", function () { window.print(); });
 
     var bar = document.getElementById("reader-progress-bar");
     var progressLabel = document.getElementById("reader-progress-label");
@@ -1025,7 +1037,7 @@
       '<section class="section" id="project"><div class="wrap"><div class="section-head"><span class="num">01 / проект</span><h2>Как устроен архив</h2></div><div class="note"><div><p class="meta">офлайн</p><p class="meta">без сервера</p><p class="meta">без сбора данных</p></div><div class="note-body"><p>Это демонстрационный артбук-архив, а не магазин и не промо-страница. Здесь нет цен, покупок, подписок, отзывов и счётчиков. Сайт открывается с диска, не требует установки и не делает внешних запросов.</p><p>Шрифты Cormorant, Literata и IBM Plex Mono лежат в файлах страницы. Поиск работает на локальном Fuse.js. Все изображения приведены к локальным размерам и тонированы. Ссылки на источники открываются только по нажатию.</p><p>Книга, автор, город и персонажи вымышлены. Совпадения с реальными людьми и организациями случайны. Фотографии взяты по свободным лицензиям, авторы указаны ниже.</p></div></div></div></section>' +
       '<section class="section" id="credits"><div class="wrap"><div class="section-head"><span class="num">02 / кредиты</span><h2>Изображения и лицензии</h2></div><div class="credit-list">' + credits + '</div><p class="meta mt-24">Фотографии тонированы и кадрированы для демонстрационного макета. Оригиналы доступны по ссылкам «источник».</p></div></section>' +
       '<section class="section"><div class="wrap"><div class="section-head"><span class="num">03 / техника</span><h2>Что внутри</h2></div><div class="card-grid card-grid--3"><div class="info-card"><h3>Шрифты</h3><p class="meta meta--plain">Cormorant, Literata, IBM Plex Mono. SIL Open Font License, файл assets/fonts/OFL.txt.</p></div><div class="info-card"><h3>Поиск</h3><p class="meta meta--plain">Fuse.js 7.5.0, MIT. Индекс собирается на клиенте из локального файла данных.</p></div><div class="info-card"><h3>Сборка</h3><p class="meta meta--plain">HTML, CSS и обычный JavaScript. Без сборщика и без сетевых запросов. Данные лежат в локальном файле data.js и загружаются вместе со страницей.</p></div></div></div></section>' +
-      '<section class="section" id="publishers"><div class="wrap"><div class="section-head"><span class="num">04 / издателям</span><h2>Рукопись и материалы</h2></div><div class="note"><div><p class="meta">рукопись</p><p class="meta">23 из 34 глав</p><p class="meta">47 753 слова</p></div><div class="note-body"><p>Для издателей собрана отдельная страница: логлайн, короткий и полный синопсис, обзор мира, темы, аудитория и факт-лист. Её можно распечатать или сохранить в PDF из браузера.</p><div class="sub-actions"><a class="link-arrow" href="pitch.html">Открыть питч</a></div></div></div></div></section>' +
+      '<section class="section" id="publishers"><div class="wrap"><div class="section-head"><span class="num">04 / издателям</span><h2>Рукопись и материалы</h2></div><div class="note"><div><p class="meta">рукопись</p><p class="meta">30 из 34 глав</p><p class="meta">63 130 слов</p></div><div class="note-body"><p>Для издателей собрана отдельная страница: логлайн, короткий и полный синопсис, обзор мира, темы, аудитория и факт-лист. Её можно распечатать или сохранить в PDF из браузера.</p><div class="sub-actions"><a class="link-arrow" href="pitch.html">Открыть питч</a></div></div></div></div></section>' +
       '<section class="section" id="sound"><div class="wrap"><div class="section-head"><span class="num">05 / звук</span><h2>Музыка, эффекты и озвучка</h2></div><div class="note"><div><p class="meta">музыка</p><p class="meta">эффекты</p><p class="meta">голос</p></div><div class="note-body"><p>Музыка включается после первого клика по странице: браузер не разрешает звук до действия пользователя. Кнопка «Звук» в шапке выключает и включает всё сразу. Выбор запоминается в браузере.</p><p>Эффекты работают на кнопках, вкладках, меню и поиске. Озвучка пока экспериментальная: кнопка «Озвучить» на главах и в досье читает текст локальным голосом браузера. Качество зависит от русского голоса Windows. Если русского голоса нет, браузер возьмёт системный.</p><p class="meta">Общая громкость музыки, эффектов и голоса.</p><div class="volume-row"><label for="sound-volume">Громкость</label><input id="sound-volume" class="volume-slider" type="range" min="0" max="100" step="1" value="' + volume + '" data-volume aria-label="Общая громкость"><output id="sound-volume-value" class="volume-value" for="sound-volume" data-volume-value>' + volume + '%</output></div><div class="sub-actions"><button class="filter-toggle" type="button" data-sound-test="music">Проверить музыку</button><button class="filter-toggle" type="button" data-sound-test="effect">Проверить эффект</button><button class="filter-toggle" type="button" data-sound-test="voice">Проверить голос</button></div></div></div></div></section>' +
       seamBlock(SITE.seams.about);
 

@@ -82,7 +82,7 @@ docs/
     README.md
     next-session.md
     session-summary-2026-10-24.md
-    session-handoff.md
+    archive/docs/2026-10-26-pre-part3/session-handoff.md
   solyanoy-protocol/
     world-bible.md
     chapter-plan.md
