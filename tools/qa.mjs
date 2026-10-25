@@ -20,6 +20,7 @@ const ROUTES = [
   "/chapter.html?n=19",
   "/chapter.html?n=20",
   "/chapter.html?n=21",
+  "/chapter.html?n=22",
   "/library.html",
   "/world.html",
   "/characters.html",

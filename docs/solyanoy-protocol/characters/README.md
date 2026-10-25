@@ -15,7 +15,7 @@
 
 При расхождении используем такой порядок:
 
-1. Опубликованный текст глав 1-21.
+1. Опубликованный текст глав 1-22.
 2. `assets/js/data.js`, как текущий канон сайта.
 3. `docs/solyanoy-protocol/chronology.md`.
 4. `docs/solyanoy-protocol/world-bible.md`.
