@@ -84,6 +84,11 @@
             '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 21 21"></path></svg>' +
             '<span>Поиск</span><kbd>Ctrl K</kbd>' +
           "</button>" +
+          '<button class="sound-toggle" type="button" data-sound-toggle aria-pressed="true" title="Выключить фоновую музыку">' +
+            '<svg class="sound-icon sound-icon--on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"></path><path d="M16 8.5a5 5 0 0 1 0 7"></path><path d="M18.5 6a8.5 8.5 0 0 1 0 12"></path></svg>' +
+            '<svg class="sound-icon sound-icon--off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"></path><path d="m16 9 5 5"></path><path d="m21 9-5 5"></path></svg>' +
+            '<span class="sound-label">Звук</span>' +
+          "</button>" +
           '<button class="layer-toggle" type="button" data-layer-toggle aria-pressed="false" title="Показать служебные пометки">' +
             '<span class="dot" aria-hidden="true"></span><span class="layer-label">Слой 2</span>' +
           "</button>" +

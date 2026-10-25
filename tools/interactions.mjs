@@ -71,8 +71,37 @@ async function main() {
     await page.click("[data-close-search]");
     await page.waitForTimeout(100);
 
+    await page.waitForFunction(() => {
+      const audio = document.querySelector("audio");
+      return !!audio && audio.readyState >= 1;
+    }, null, { timeout: 4000 }).catch(() => {});
+    const audioHome = await page.evaluate(() => {
+      const audio = document.querySelector("audio");
+      const button = document.querySelector("[data-sound-toggle]");
+      return {
+        src: audio ? audio.src : "",
+        duration: audio ? audio.duration : 0,
+        error: audio && audio.error ? audio.error.code : 0,
+        hasButton: !!button,
+        pressed: button ? button.getAttribute("aria-pressed") : null
+      };
+    });
+    check("Кнопка звука есть в шапке", audioHome.hasButton);
+    check("На главной тема дождя", /rain\.mp3/.test(audioHome.src), audioHome.src);
+    check("Аудио читается браузером", audioHome.duration > 1 && !audioHome.error, JSON.stringify(audioHome));
+
+    await page.click("[data-sound-toggle]");
+    const muted = await page.evaluate(() => {
+      const button = document.querySelector("[data-sound-toggle]");
+      return { pressed: button ? button.getAttribute("aria-pressed") : null, stored: localStorage.getItem("sol-sound") };
+    });
+    check("Звук выключается и запоминается", muted.pressed === "false" && muted.stored === "0", JSON.stringify(muted));
+    await page.click("[data-sound-toggle]");
+
     await page.goto(base + "/gallery.html", { waitUntil: "load" });
     await page.waitForTimeout(300);
+    const galleryAudio = await page.evaluate(() => document.querySelector("audio")?.src || "");
+    check("В галерее тема неона", /neon\.mp3/.test(galleryAudio), galleryAudio);
     await page.click('[data-group="Персонажи"]');
     await page.waitForTimeout(250);
     const galleryCount = await page.locator("#gal-count").textContent();
@@ -80,16 +109,32 @@ async function main() {
 
     await page.goto(base + "/chapter.html?n=1", { waitUntil: "load" });
     await page.waitForTimeout(300);
+    const chapterAudio = await page.evaluate(() => document.querySelector("audio")?.src || "");
+    check("В читалке бумажная тема", /paper\.mp3/.test(chapterAudio), chapterAudio);
     const fontBefore = await page.evaluate(() => parseFloat(getComputedStyle(document.querySelector(".reader-text")).fontSize));
     await page.click('[data-font="1"]');
     await page.waitForTimeout(200);
     const fontAfter = await page.evaluate(() => parseFloat(getComputedStyle(document.querySelector(".reader-text")).fontSize));
     check("Шрифт читалки увеличивается", fontAfter > fontBefore, fontBefore + " -> " + fontAfter);
 
+    const voiceChapter = await page.evaluate(() => ({
+      button: !!document.querySelector("[data-voice-chapter]"),
+      label: document.querySelector("[data-voice-chapter]")?.textContent || "",
+      effect: typeof window.SolSound?.effect === "function",
+      speak: typeof window.SolSound?.speak === "function"
+    }));
+    check("Кнопка озвучки главы есть", voiceChapter.button, voiceChapter.label);
+    check("Эффекты и озвучка доступны", voiceChapter.effect && voiceChapter.speak);
+
     await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
     await page.waitForTimeout(400);
     const topVisible = await page.evaluate(() => document.getElementById("scroll-top-btn")?.classList.contains("visible"));
     check("Кнопка наверх появляется", !!topVisible);
+    const topPosition = await page.evaluate(() => {
+      const rect = document.getElementById("scroll-top-btn")?.getBoundingClientRect();
+      return { left: rect ? Math.round(rect.left) : 0, right: rect ? Math.round(window.innerWidth - rect.right) : 0, viewport: window.innerWidth };
+    });
+    check("Кнопка наверх справа", topPosition.right <= 32 && topPosition.left > topPosition.viewport / 2, JSON.stringify(topPosition));
     await page.click("#scroll-top-btn");
     await page.waitForFunction(() => window.scrollY < 2, null, { timeout: 5000 }).catch(() => {});
     const scrollAfter = await page.evaluate(() => window.scrollY);
@@ -97,6 +142,8 @@ async function main() {
 
     await page.goto(base + "/world.html", { waitUntil: "load" });
     await page.waitForTimeout(300);
+    const worldAudio = await page.evaluate(() => document.querySelector("audio")?.src || "");
+    check("В мире индустриальная тема", /industry\.mp3/.test(worldAudio), worldAudio);
     const worldList = await page.evaluate(() => {
       const list = document.querySelector(".cross-list");
       const link = list ? list.querySelector("a") : null;
@@ -119,6 +166,22 @@ async function main() {
     });
     check("Шапка держится сверху", sticky.headerTop === 0, JSON.stringify(sticky));
     check("Прогресс держится под шапкой", sticky.progressTop >= sticky.headerBottom - 2 && sticky.progressTop <= sticky.headerBottom + 12, JSON.stringify(sticky));
+
+    await page.goto(base + "/about.html#sound", { waitUntil: "load" });
+    await page.waitForTimeout(300);
+    const soundPanel = await page.evaluate(() => ({
+      tests: document.querySelectorAll("[data-sound-test]").length,
+      heading: document.querySelector("#sound h2")?.textContent || ""
+    }));
+    check("На странице автора есть проверка звука", soundPanel.tests === 3, soundPanel.heading || "нет блока");
+
+    await page.goto(base + "/dossier.html?id=kira", { waitUntil: "load" });
+    await page.waitForTimeout(300);
+    const dossierVoice = await page.evaluate(() => ({
+      button: !!document.querySelector('[data-voice-kind="character"]'),
+      label: document.querySelector('[data-voice-kind="character"]')?.textContent || ""
+    }));
+    check("Озвучка досье есть", dossierVoice.button, dossierVoice.label);
 
     const reportPath = path.join(os.tmpdir(), "solyanoy-interactions-report.json");
     fs.writeFileSync(reportPath, JSON.stringify({ checks, issues }, null, 2), "utf8");

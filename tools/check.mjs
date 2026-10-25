@@ -30,7 +30,7 @@ function checkCounts(site) {
   const expected = {
     chapters: 34,
     documents: 12,
-    timeline: 19,
+    timeline: 22,
     characters: 11,
     locations: 10,
     corporations: 7,
@@ -123,10 +123,16 @@ function checkAssets(site) {
   for (const location of site.locations) {
     if (!site.images[location.img]) issues.push("location " + location.id + ": unknown image " + location.img);
   }
+  const audio = path.join(ROOT, "assets", "audio");
+  for (const file of ["rain.mp3", "paper.mp3", "industry.mp3", "neon.mp3", "signal.mp3"]) {
+    const full = path.join(audio, file);
+    if (!fs.existsSync(full)) issues.push("missing audio " + path.relative(ROOT, full));
+    else if (fs.statSync(full).size < 1024) issues.push("audio too small " + path.relative(ROOT, full));
+  }
 }
 
 function main() {
-  for (const file of ["assets/js/data.js", "assets/js/app.js", "assets/js/chrome.js"]) syntax(path.join(ROOT, file));
+  for (const file of ["assets/js/data.js", "assets/js/app.js", "assets/js/chrome.js", "assets/js/audio.js"]) syntax(path.join(ROOT, file));
   const site = readSite();
   checkCounts(site);
   checkChapters(site);

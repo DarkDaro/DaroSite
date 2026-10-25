@@ -870,6 +870,8 @@ dialog::backdrop { background: rgba(4, 5, 5, 0.78); }
 }
 .filter-toggle:hover { color: var(--bone); border-color: var(--line-2); }
 .filter-toggle .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--amber); }
+.voice-btn.is-speaking { color: var(--cyan); border-color: rgba(95, 251, 241, 0.6); box-shadow: 0 0 12px rgba(95, 251, 241, 0.18); }
+.voice-btn.is-speaking::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
 
 .filter-panel {
   display: none;
@@ -2962,7 +2964,7 @@ table.data tr:hover td { background: rgba(198, 255, 74, 0.035); }
 
 .scroll-top-btn {
   position: fixed;
-  left: 24px;
+  right: 24px;
   bottom: 24px;
   z-index: 1000;
   width: 44px;
@@ -2992,9 +2994,9 @@ table.data tr:hover td { background: rgba(198, 255, 74, 0.035); }
 .scroll-top-btn::after {
   content: "Наверх";
   position: absolute;
-  left: calc(100% + 12px);
+  right: calc(100% + 12px);
   top: 50%;
-  transform: translate(-6px, -50%);
+  transform: translate(6px, -50%);
   padding: 6px 9px;
   border: 1px solid var(--line);
   background: rgba(4, 8, 14, 0.94);
@@ -3120,7 +3122,7 @@ body::after {
 
 @media (max-width: 680px) {
   .scroll-top-btn {
-    left: 16px;
+    right: 16px;
     bottom: 16px;
     width: 44px;
     height: 44px;
@@ -3565,4 +3567,104 @@ body::after {
 
 @media (max-width: 680px) {
   .spec-grid { grid-template-columns: 1fr; }
+}
+
+
+/* Фоновая музыка: кнопка в шапке. 25.10 */
+
+.sound-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--fog);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.18s var(--ease), color 0.18s var(--ease), background 0.18s var(--ease);
+}
+
+.sound-toggle:hover {
+  border-color: var(--line-2);
+  color: var(--bone);
+}
+
+.sound-toggle svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sound-toggle .sound-icon--off { display: none; }
+.sound-toggle[aria-pressed="false"] .sound-icon--on { display: none; }
+.sound-toggle[aria-pressed="false"] .sound-icon--off { display: block; }
+.sound-toggle[aria-pressed="true"] {
+  color: var(--cyan);
+  border-color: rgba(95, 251, 241, 0.3);
+}
+.sound-toggle.is-muted {
+  color: var(--fog-dark);
+  border-color: var(--line);
+}
+.sound-toggle.is-blocked {
+  animation: soundHint 2.4s ease-in-out infinite;
+}
+.sound-toggle:focus-visible {
+  outline: 1px solid var(--cyan);
+  outline-offset: 3px;
+}
+.sound-toggle:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+@keyframes soundHint {
+  0%, 100% { box-shadow: 0 0 0 rgba(95, 251, 241, 0); }
+  50% { box-shadow: 0 0 0 4px rgba(95, 251, 241, 0.08); }
+}
+
+@media (max-width: 900px) {
+  .sound-toggle {
+    min-width: 38px;
+    min-height: 38px;
+    padding: 0;
+    justify-content: center;
+  }
+  .sound-toggle .sound-label { display: none; }
+}
+
+@media (max-width: 360px) {
+  .sound-toggle {
+    min-width: 36px;
+    min-height: 36px;
+  }
+}
+
+@media (min-width: 381px) and (max-width: 430px) {
+  .brand-mark { font-size: 14px; }
+  .header-tools { gap: 4px; }
+  .search-open,
+  .sound-toggle,
+  .layer-toggle,
+  .menu-toggle {
+    min-width: 36px;
+    min-height: 36px;
+  }
+  .menu-toggle {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sound-toggle.is-blocked { animation: none; }
 }

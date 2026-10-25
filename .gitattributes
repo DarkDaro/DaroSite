@@ -14,6 +14,8 @@
 
 # Бинарные ассеты: не нормализовать и не пытаться сравнивать как текст
 *.webp binary
+*.mp3 binary
+*.wav binary
 *.png binary
 *.jpg binary
 *.jpeg binary
