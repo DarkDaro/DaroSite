@@ -29,14 +29,14 @@ function readSite() {
 function checkCounts(site) {
   const expected = {
     chapters: 34,
-    documents: 9,
-    timeline: 18,
-    characters: 10,
+    documents: 12,
+    timeline: 19,
+    characters: 11,
     locations: 10,
     corporations: 7,
     implants: 8,
     weapons: 7,
-    glossary: 25,
+    glossary: 29,
     gallery: 39
   };
   for (const [key, value] of Object.entries(expected)) {
