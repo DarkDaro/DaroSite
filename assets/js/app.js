@@ -120,9 +120,9 @@
   }
 
   function crumbs(items) {
-    return '<nav class="crumbs meta" aria-label="Хлебные крошки">' + items.map(function (item, i) {
+    return '<div class="wrap"><nav class="crumbs meta" aria-label="Хлебные крошки">' + items.map(function (item, i) {
       return (i ? "<span>/</span>" : "") + '<a href="' + item.href + '">' + esc(item.label) + "</a>";
-    }).join("") + "</nav>";
+    }).join("") + "</nav></div>";
   }
 
   function seamBlock(text) {
@@ -543,7 +543,7 @@
     var total = SITE.characters.length;
 
     main.innerHTML = pageHead("Мир / персонажи", "Досье", total + " человек, которые знают слишком много. Часть лиц открыта, часть не фиксируется.", [total + " досье", portraits + " " + U.plural(portraits, ["открытый портрет", "открытых портрета", "открытых портретов"]), "демонстрационные лица"]) +
-      '<div class="toolbar"><div class="wrap"><div class="toolbar-row"><div class="tabs" role="tablist" aria-label="Группы персонажей">' + groups.map(function (group) {
+      '<div class="toolbar"><div class="wrap"><div class="toolbar-row toolbar-row--characters"><div class="tabs" role="tablist" aria-label="Группы персонажей">' + groups.map(function (group) {
         return '<button class="tab" type="button" role="tab" data-group="' + group.id + '" aria-selected="' + (group.id === "all" ? "true" : "false") + '">' + esc(group.label) + '<span class="count">' + counts[group.id] + "</span></button>";
       }).join("") + '</div><div class="toolbar-spacer"></div><div class="tool-field"><label for="char-query">Поиск</label><input id="char-query" type="search" placeholder="имя, роль" autocomplete="off"></div><div class="tool-field"><label for="char-sort">Сортировка</label><select id="char-sort"><option value="name">по имени</option><option value="role">по роли</option><option value="chapter">по главе</option></select></div><div class="view-toggle" role="group" aria-label="Вид каталога"><button type="button" data-view="grid" aria-pressed="true">Сетка</button><button type="button" data-view="list" aria-pressed="false">Список</button></div></div></div></div>' +
       '<section class="section--tight"><div class="wrap"><div class="result-line"><p class="meta" id="char-count"></p><p class="meta">портреты: демонстрационные</p></div><div id="char-results"></div></div></section>' +
@@ -611,13 +611,14 @@
     var controls = unique(SITE.locations.map(function (item) { return item.control; }));
     var access = unique(SITE.locations.map(function (item) { return item.access; }));
     var counts = { all: SITE.locations.length, tier: 0, bottom: 0, layer: 0 };
+    var compact = window.matchMedia("(max-width: 900px)").matches;
     SITE.locations.forEach(function (item) { counts[item.group] += 1; });
 
     main.innerHTML = pageHead("Мир / локации", "Места", "Кассий делится на ярусы, дно и слой. В каждом месте своя вода, свой допуск и своя версия того, что здесь произошло.", ["10 локаций", "3 группы", "фильтры по контролю"]) +
-      '<div class="toolbar"><div class="wrap"><div class="toolbar-row"><div class="tabs" role="tablist" aria-label="Группы локаций">' + groups.map(function (group) {
+      '<div class="toolbar"><div class="wrap"><div class="toolbar-row toolbar-row--locations"><div class="tabs" role="tablist" aria-label="Группы локаций">' + groups.map(function (group) {
         return '<button class="tab" type="button" role="tab" data-group="' + group.id + '" aria-selected="' + (group.id === "all" ? "true" : "false") + '">' + esc(group.label) + '<span class="count">' + counts[group.id] + "</span></button>";
-      }).join("") + '</div><div class="toolbar-spacer"></div><div class="tool-field"><label for="loc-query">Поиск</label><input id="loc-query" type="search" placeholder="место, контроль" autocomplete="off"></div><div class="tool-field"><label for="loc-sort">Сортировка</label><select id="loc-sort"><option value="tier">по типу</option><option value="name">по имени</option><option value="chapter">по главе</option></select></div><button class="filter-toggle" type="button" data-filter-toggle aria-expanded="true"><span class="dot"></span>Фильтры</button></div>' +
-      '<div class="filter-panel" data-open="true" data-filter-panel><div class="filter-group"><p class="meta">Контроль</p><div class="chips"><button class="chip" type="button" data-filter="control" data-value="all" aria-pressed="true">все</button>' + controls.map(function (value) { return '<button class="chip" type="button" data-filter="control" data-value="' + esc(value) + '" aria-pressed="false">' + esc(value) + "</button>"; }).join("") + '</div></div><div class="filter-group"><p class="meta">Доступ</p><div class="chips"><button class="chip" type="button" data-filter="access" data-value="all" aria-pressed="true">все</button>' + access.map(function (value) { return '<button class="chip" type="button" data-filter="access" data-value="' + esc(value) + '" aria-pressed="false">' + esc(value) + "</button>"; }).join("") + '</div></div><div class="filter-actions"><button type="button" data-reset>Сбросить</button></div></div></div></div>' +
+      }).join("") + '</div><div class="toolbar-spacer"></div><div class="tool-field"><label for="loc-query">Поиск</label><input id="loc-query" type="search" placeholder="место, контроль" autocomplete="off"></div><div class="tool-field"><label for="loc-sort">Сортировка</label><select id="loc-sort"><option value="tier">по типу</option><option value="name">по имени</option><option value="chapter">по главе</option></select></div><button class="filter-toggle" type="button" data-filter-toggle aria-expanded="' + (compact ? "false" : "true") + '"><span class="dot"></span>Фильтры</button></div>' +
+      '<div class="filter-panel" data-open="' + (compact ? "false" : "true") + '" data-filter-panel><div class="filter-group"><p class="meta">Контроль</p><div class="chips"><button class="chip" type="button" data-filter="control" data-value="all" aria-pressed="true">все</button>' + controls.map(function (value) { return '<button class="chip" type="button" data-filter="control" data-value="' + esc(value) + '" aria-pressed="false">' + esc(value) + "</button>"; }).join("") + '</div></div><div class="filter-group"><p class="meta">Доступ</p><div class="chips"><button class="chip" type="button" data-filter="access" data-value="all" aria-pressed="true">все</button>' + access.map(function (value) { return '<button class="chip" type="button" data-filter="access" data-value="' + esc(value) + '" aria-pressed="false">' + esc(value) + "</button>"; }).join("") + '</div></div><div class="filter-actions"><button type="button" data-reset>Сбросить</button></div></div></div></div>' +
       '<section class="section--tight"><div class="wrap"><div class="result-line"><p class="meta" id="loc-count"></p><p class="meta">фильтры сохраняются в адресе</p></div><div id="loc-results"></div></div></section>' +
       seamBlock(SITE.seams.locations);
 
@@ -706,7 +707,7 @@
     SITE.corporations.forEach(function (item) { counts[item.group] += 1; });
 
     main.innerHTML = pageHead("Мир / организации", "Кто держит Кассий", "Четыре корпорации, городской комитет и два коллектива, которые не считают себя властью, но без которых город не работает.", ["7 организаций", "4 корпорации", "2 коллектива"]) +
-      '<div class="toolbar"><div class="wrap"><div class="toolbar-row"><div class="tabs" role="tablist" aria-label="Группы организаций">' + groups.map(function (group) {
+      '<div class="toolbar"><div class="wrap"><div class="toolbar-row toolbar-row--corporations"><div class="tabs" role="tablist" aria-label="Группы организаций">' + groups.map(function (group) {
         return '<button class="tab" type="button" role="tab" data-group="' + group.id + '" aria-selected="' + (group.id === "all" ? "true" : "false") + '">' + esc(group.label) + '<span class="count">' + counts[group.id] + "</span></button>";
       }).join("") + '</div><div class="toolbar-spacer"></div><div class="tool-field"><label for="corp-query">Поиск</label><input id="corp-query" type="search" placeholder="название, сфера" autocomplete="off"></div><div class="tool-field"><label for="corp-sort">Сортировка</label><select id="corp-sort"><option value="name">по имени</option><option value="founded">по году</option><option value="sector">по сфере</option></select></div></div></div></div>' +
       '<section class="section--tight"><div class="wrap"><div class="result-line"><p class="meta" id="corp-count"></p><p class="meta">уставы и договоры</p></div><div id="corp-results"></div></div></section>' +
@@ -763,6 +764,7 @@
       : [{ id: "all", label: "Все" }, { id: "pistol", label: "Пистолеты" }, { id: "heavy", label: "Тяжёлое" }, { id: "nonlethal", label: "Нелетальное" }, { id: "handmade", label: "Кустарное" }];
     var legalities = unique(items.map(function (item) { return item.legality; }));
     var state = { group: "all", query: "", legality: "all", sort: "name", dir: 1 };
+    var compact = window.matchMedia("(max-width: 900px)").matches;
     var counts = { all: items.length };
     items.forEach(function (item) { counts[item.group] = (counts[item.group] || 0) + 1; });
     var title = isImplant ? "Имплантаты" : "Вооружение";
@@ -772,12 +774,12 @@
       : "Семь единиц, которые город носит на ремне или в кармане. Служебные, кустарные и те, что не должны существовать.";
 
     main.innerHTML = pageHead(eyebrow, title, lead, [items.length + " записей", "фильтры по статусу", "сортировка по столбцам"]) +
-      '<div class="toolbar"><div class="wrap"><div class="toolbar-row"><div class="tabs" role="tablist" aria-label="Классы">' + groups.map(function (group) {
+      '<div class="toolbar"><div class="wrap"><div class="toolbar-row toolbar-row--catalogue"><div class="tabs" role="tablist" aria-label="Классы">' + groups.map(function (group) {
         var n = group.id === "all" ? items.length : (counts[group.id] || 0);
         return '<button class="tab" type="button" role="tab" data-group="' + group.id + '" aria-selected="' + (group.id === "all" ? "true" : "false") + '">' + esc(group.label) + '<span class="count">' + n + "</span></button>";
-      }).join("") + '</div><div class="toolbar-spacer"></div><div class="tool-field"><label for="cat-query">Поиск</label><input id="cat-query" type="search" placeholder="название, производитель" autocomplete="off"></div><button class="filter-toggle" type="button" data-filter-toggle aria-expanded="true"><span class="dot"></span>Фильтры</button></div>' +
-      '<div class="filter-panel" data-open="true" data-filter-panel><div class="filter-group"><p class="meta">Правовой статус</p><div class="chips"><button class="chip" type="button" data-filter="legality" data-value="all" aria-pressed="true">все</button>' + legalities.map(function (value) { return '<button class="chip" type="button" data-filter="legality" data-value="' + esc(value) + '" aria-pressed="false">' + esc(value) + "</button>"; }).join("") + '</div></div><div class="filter-actions"><button type="button" data-reset>Сбросить</button></div></div></div></div>' +
-      '<section class="section--tight"><div class="wrap"><div class="result-line"><p class="meta" id="cat-count"></p><p class="meta">нажмите на заголовок столбца для сортировки</p></div><div id="cat-results"></div></div></section>' +
+      }).join("") + '</div><div class="toolbar-spacer"></div><div class="tool-field"><label for="cat-query">Поиск</label><input id="cat-query" type="search" placeholder="название, производитель" autocomplete="off"></div><button class="filter-toggle" type="button" data-filter-toggle aria-expanded="' + (compact ? "false" : "true") + '"><span class="dot"></span>Фильтры</button></div>' +
+      '<div class="filter-panel" data-open="' + (compact ? "false" : "true") + '" data-filter-panel><div class="filter-group"><p class="meta">Правовой статус</p><div class="chips"><button class="chip" type="button" data-filter="legality" data-value="all" aria-pressed="true">все</button>' + legalities.map(function (value) { return '<button class="chip" type="button" data-filter="legality" data-value="' + esc(value) + '" aria-pressed="false">' + esc(value) + "</button>"; }).join("") + '</div></div><div class="filter-actions"><button type="button" data-reset>Сбросить</button></div></div></div></div>' +
+      '<section class="section--tight"><div class="wrap"><div class="result-line"><p class="meta" id="cat-count"></p><p class="meta sort-hint">нажмите на заголовок столбца для сортировки</p></div><div id="cat-results"></div></div></section>' +
       seamBlock(isImplant ? SITE.seams.implants : SITE.seams.weapons);
 
     var results = document.getElementById("cat-results");
@@ -810,10 +812,13 @@
       var columns = isImplant
         ? [["name", "Название"], ["cls", "Класс"], ["maker", "Производитель"], ["legality", "Статус"], ["risk", "Риск"], ["chapters", "Главы"]]
         : [["name", "Название"], ["cls", "Класс"], ["maker", "Производитель"], ["legality", "Статус"], ["ammo", "Боеприпас"], ["chapters", "Главы"]];
-      return '<div class="table-wrap"><table class="data"><thead><tr>' + columns.map(function (column) {
+      var mobileSort = '<div class="tool-field catalogue-mobile-sort"><label for="cat-mobile-sort">Сортировка</label><select id="cat-mobile-sort" data-mobile-sort>' + columns.map(function (column) {
+        return '<option value="' + column[0] + '"' + (state.sort === column[0] ? " selected" : "") + ">" + esc(column[1]) + "</option>";
+      }).join("") + "</select></div>";
+      return mobileSort + '<div class="table-wrap"><table class="data"><thead><tr>' + columns.map(function (column) {
         return "<th>" + sortButton(column[0], column[1]) + "</th>";
       }).join("") + "</tr></thead><tbody>" + list.map(function (item) {
-        return '<tr><td class="name"><a href="' + U.dossierUrl(item.id) + '">' + esc(item.name) + "</a></td><td><span class=\"mono\">" + esc(item.cls) + '</span></td><td><span class="mono">' + esc(item.maker) + '</span></td><td>' + badge(item.legality) + '</td><td><span class="mono">' + esc(isImplant ? item.risk : item.ammo) + '</span></td><td><span class="mono">' + item.chapters.map(function (n) { return '<a class="link-quiet" href="' + U.chapterUrl(n) + '">' + n + "</a>"; }).join(", ") + "</span></td></tr>";
+        return '<tr><td class="name" data-label="' + esc(columns[0][1]) + '"><a href="' + U.dossierUrl(item.id) + '">' + esc(item.name) + '</a></td><td data-label="' + esc(columns[1][1]) + '"><span class="mono">' + esc(item.cls) + '</span></td><td data-label="' + esc(columns[2][1]) + '"><span class="mono">' + esc(item.maker) + '</span></td><td data-label="' + esc(columns[3][1]) + '">' + badge(item.legality) + '</td><td data-label="' + esc(columns[4][1]) + '"><span class="mono">' + esc(isImplant ? item.risk : item.ammo) + '</span></td><td data-label="' + esc(columns[5][1]) + '"><span class="mono">' + item.chapters.map(function (n) { return '<a class="link-quiet" href="' + U.chapterUrl(n) + '">' + n + "</a>"; }).join(", ") + "</span></td></tr>";
       }).join("") + "</tbody></table></div>";
     }
 
@@ -861,6 +866,13 @@
       else { state.sort = key; state.dir = 1; }
       apply();
     });
+    results.addEventListener("change", function (event) {
+      var select = event.target.closest("[data-mobile-sort]");
+      if (!select) return;
+      state.sort = select.value;
+      state.dir = 1;
+      apply();
+    });
     var toggle = main.querySelector("[data-filter-toggle]");
     if (toggle) toggle.addEventListener("click", function () {
       var open = panel.dataset.open !== "true";
@@ -882,7 +894,7 @@
     SITE.gallery.forEach(function (item) { counts[item.type] = (counts[item.type] || 0) + 1; });
 
     main.innerHTML = pageHead("Архив / пластины", "Галерея", "Контактный лист Кассия: улицы, ярусы, лица и обложки. Все фотографии тонированы и приведены к локальным размерам.", [SITE.gallery.length + " пластин", "5 разделов", "свободные лицензии"]) +
-      '<div class="toolbar"><div class="wrap"><div class="toolbar-row"><div class="tabs" role="tablist" aria-label="Разделы галереи">' + groups.map(function (group) {
+      '<div class="toolbar"><div class="wrap"><div class="toolbar-row toolbar-row--gallery"><div class="tabs" role="tablist" aria-label="Разделы галереи">' + groups.map(function (group) {
         var n = group.id === "all" ? SITE.gallery.length : (counts[group.id] || 0);
         return '<button class="tab" type="button" role="tab" data-group="' + group.id + '" aria-selected="' + (group.id === "all" ? "true" : "false") + '">' + esc(group.label) + '<span class="count">' + n + "</span></button>";
       }).join("") + '</div><div class="toolbar-spacer"></div><div class="tool-field"><label for="gal-sort">Сортировка</label><select id="gal-sort"><option value="chapter">по главе</option><option value="title">по названию</option><option value="type">по разделу</option></select></div></div></div></div>' +
@@ -1095,10 +1107,10 @@
   }
 
   function dossierHead(title, eyebrow, aliases, visual, meta) {
-    return '<header class="dossier-head"><div><p class="eyebrow">' + esc(eyebrow) + "</p><h1>" + esc(title) + "</h1>" +
+    return '<div class="wrap"><header class="dossier-head"><div><p class="eyebrow">' + esc(eyebrow) + "</p><h1>" + esc(title) + "</h1>" +
       (aliases ? '<p class="aliases">' + esc(aliases) + "</p>" : "") +
       (meta ? '<div class="page-head-meta">' + meta.map(function (line) { return '<span class="meta">' + esc(line) + "</span>"; }).join("") + "</div>" : "") +
-      "</div><div class=\"dossier-portrait\">" + visual + "</div></header>";
+      "</div><div class=\"dossier-portrait\">" + visual + "</div></header></div>";
   }
 
   function characterDossier(item) {

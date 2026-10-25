@@ -19,7 +19,7 @@
   --pad: clamp(18px, 4vw, 64px);
   --maxw: 1280px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --header-h: 72px;
+  --header-h: 74px;
 }
 
 *,
@@ -30,6 +30,10 @@ html {
   background: var(--ink);
   color-scheme: dark;
   scroll-behavior: smooth;
+}
+
+[id] {
+  scroll-margin-top: calc(var(--header-h) + 18px);
 }
 
 body {
@@ -276,7 +280,7 @@ input, select {
 html[data-layer="2"] .site-header::after { background: var(--amber-line); }
 
 .header-inner {
-  height: var(--header-h);
+  height: calc(var(--header-h) - 2px);
   display: flex;
   align-items: center;
   gap: clamp(16px, 2.4vw, 34px);
@@ -1391,7 +1395,7 @@ html[data-layer="2"] .seam-inline { display: inline; }
 }
 
 @media (max-width: 900px) {
-  :root { --header-h: 62px; }
+  :root { --header-h: 64px; }
   .main-nav { display: none; }
   .menu-toggle { display: inline-flex; }
   .search-open kbd { display: none; }
@@ -4005,4 +4009,261 @@ body::after {
   padding-bottom: 0;
   border-top: 1px solid var(--line);
   border-bottom: 0;
+}
+
+/* Мобильные карточки каталогов. 2026-10-25 */
+
+.catalogue-mobile-sort { display: none; }
+
+@media screen and (max-width: 900px) {
+  .catalogue-mobile-sort {
+    display: flex;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .catalogue-mobile-sort select { flex: 1; }
+  .sort-hint { display: none; }
+
+  .table-wrap {
+    overflow: visible;
+    border-top: 0;
+  }
+  .table-wrap table.data {
+    display: block;
+    min-width: 0;
+  }
+  .table-wrap table.data thead { display: none; }
+  .table-wrap table.data tbody {
+    display: grid;
+    gap: 10px;
+  }
+  .table-wrap table.data tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 14px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.015);
+  }
+  .table-wrap table.data td {
+    display: block;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    vertical-align: top;
+    font-size: 0.96rem;
+  }
+  .table-wrap table.data td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 3px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    line-height: 1.4;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fog-dark);
+  }
+  .table-wrap table.data td.name { grid-column: 1 / -1; }
+  .table-wrap table.data td.name::before { display: none; }
+  .table-wrap table.data td.name a {
+    font-size: clamp(23px, 7.6vw, 30px);
+    line-height: 1.05;
+  }
+  .table-wrap table.data td:last-child { grid-column: 1 / -1; }
+  .table-wrap table.data tr:hover td { background: transparent; }
+}
+
+@media screen and (min-width: 600px) and (max-width: 900px) {
+  .table-wrap table.data tbody {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Мобильная сетка панелей управления. 2026-10-25 */
+
+@media screen and (max-width: 680px) {
+  .toolbar { padding-block: 10px; }
+  .toolbar-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+  }
+  .toolbar-row .toolbar-spacer { display: none; }
+  .toolbar-row .tabs {
+    grid-column: 1 / -1;
+    gap: 2px 14px;
+  }
+  .toolbar-row .tool-field { min-width: 0; }
+
+  .toolbar-row--characters .tool-field:nth-child(3),
+  .toolbar-row--locations .tool-field:nth-child(3),
+  .toolbar-row--corporations .tool-field:nth-child(3),
+  .toolbar-row--gallery .tool-field:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+  .toolbar-row--characters .tool-field:nth-child(4),
+  .toolbar-row--locations .tool-field:nth-child(4) {
+    grid-column: 1;
+  }
+  .toolbar-row--characters .view-toggle,
+  .toolbar-row--locations .filter-toggle {
+    grid-column: 2;
+    justify-self: end;
+  }
+  .toolbar-row--catalogue .tool-field:nth-child(3) { grid-column: 1; }
+  .toolbar-row--catalogue .filter-toggle {
+    grid-column: 2;
+    justify-self: end;
+  }
+  .toolbar-row--corporations .tool-field:nth-child(4) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Тап-зоны 44 px. 2026-10-25 */
+
+@media screen and (max-width: 900px) {
+  .skip-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .brand { min-height: 44px; }
+  .search-open,
+  .sound-toggle,
+  .layer-toggle,
+  .menu-toggle {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .menu-toggle {
+    width: 44px;
+    height: 44px;
+  }
+  .dialog-close,
+  .lb-nav button {
+    width: 44px;
+    height: 44px;
+  }
+  .font-step {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .filter-toggle,
+  .filter-actions [data-reset] {
+    min-height: 44px;
+  }
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 12px 0;
+  }
+  .volume-slider {
+    height: 44px;
+    min-height: 44px;
+  }
+  .chip {
+    min-height: 44px;
+  }
+  .tool-field {
+    min-height: 44px;
+    padding: 0 10px;
+  }
+  .tool-field input,
+  .tool-field select,
+  .toolbar select {
+    min-height: 44px;
+  }
+  .view-toggle button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .link-arrow,
+  .link-quiet,
+  .footer-grid a,
+  .crumbs a,
+  .glossary-item .link-quiet,
+  .note-item .link,
+  .reader-tools .link-quiet,
+  .id-table a,
+  .credit-row .link-quiet,
+  .document-card .link-quiet,
+  .timeline-body .link-quiet,
+  .relation-row,
+  .search-result {
+    min-height: 44px;
+  }
+  .crumbs a,
+  .id-table a,
+  .glossary-item .link-quiet,
+  .note-item .link,
+  .reader-tools .link-quiet,
+  .credit-row .link-quiet,
+  .document-card .link-quiet,
+  .timeline-body .link-quiet {
+    display: inline-flex;
+    align-items: center;
+    min-width: 44px;
+  }
+  .table-wrap table.data td.name a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .table-wrap table.data td .link-quiet {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media screen and (max-width: 430px) {
+  .header-inner { gap: 4px; }
+  .header-tools { gap: 2px; }
+  .brand-mark { font-size: 12px; }
+}
+
+@media screen and (max-width: 380px) {
+  .header-inner { gap: 2px; }
+  .brand-mark { font-size: 11px; }
+}
+
+@media screen and (max-width: 360px) {
+  .brand-mark { font-size: 10px; }
+}
+
+/* Кегль служебных подписей. 2026-10-25 */
+
+.status { font-size: 10.5px; }
+.tool-field label,
+.gallery-item figcaption .g-meta,
+.card .card-sub,
+.index-row .m,
+.footer-grid h3,
+.glossary-item .link-quiet,
+.world-cat .num,
+.world-cat .meta,
+.note-item .note-no,
+.relation-row .rel-role,
+.search-result .r-type,
+.filter-actions button,
+.pf-label,
+.ds-code,
+.brand-sub,
+.search-open kbd,
+table.data th {
+  font-size: 10px;
+}
+table.data td .mono { font-size: 10.5px; }
+.plate-cap { font-size: 10px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }

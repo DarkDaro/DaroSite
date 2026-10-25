@@ -42,7 +42,7 @@ async function main() {
   try {
     const { chromium } = await loadPlaywright();
     browser = await chromium.launch({ headless: true, executablePath: findChromium() });
-    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
     const page = await context.newPage();
 
     await page.goto(base + "/index.html", { waitUntil: "load" });
@@ -52,13 +52,19 @@ async function main() {
     const menu = await page.evaluate(() => {
       const dialog = document.querySelector("#menu-dialog");
       const link = dialog ? dialog.querySelector(".menu-nav a") : null;
+      const close = dialog ? dialog.querySelector("[data-close-menu]") : null;
+      const linkRect = link ? link.getBoundingClientRect() : null;
+      const closeRect = close ? close.getBoundingClientRect() : null;
       return {
         open: dialog ? dialog.open : false,
-        linkHeight: link ? Math.round(link.getBoundingClientRect().height) : 0
+        linkHeight: linkRect ? Math.round(linkRect.height) : 0,
+        closeWidth: closeRect ? Math.round(closeRect.width) : 0,
+        closeHeight: closeRect ? Math.round(closeRect.height) : 0
       };
     });
     check("Меню открывается", menu.open);
-    check("Ссылка меню не меньше 40px", menu.linkHeight >= 40, String(menu.linkHeight));
+    check("Ссылка меню не меньше 44px", menu.linkHeight >= 44, String(menu.linkHeight));
+    check("Закрытие меню не меньше 44px", menu.closeWidth >= 44 && menu.closeHeight >= 44, menu.closeWidth + "x" + menu.closeHeight);
     await page.click("[data-close-menu]");
     await page.waitForTimeout(150);
 
@@ -163,10 +169,81 @@ async function main() {
     const sticky = await page.evaluate(() => {
       const header = document.querySelector(".site-header").getBoundingClientRect();
       const progress = document.querySelector(".reader-progress").getBoundingClientRect();
-      return { headerTop: Math.round(header.top), headerBottom: Math.round(header.bottom), progressTop: Math.round(progress.top) };
+      const token = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h"));
+      return {
+        headerTop: Math.round(header.top),
+        headerBottom: Math.round(header.bottom),
+        headerHeight: Math.round(header.height),
+        token,
+        progressTop: Math.round(progress.top)
+      };
     });
     check("Шапка держится сверху", sticky.headerTop === 0, JSON.stringify(sticky));
-    check("Прогресс держится под шапкой", sticky.progressTop >= sticky.headerBottom - 2 && sticky.progressTop <= sticky.headerBottom + 12, JSON.stringify(sticky));
+    check("Высота шапки совпадает с токеном", Math.abs(sticky.headerHeight - sticky.token) <= 1, JSON.stringify(sticky));
+    check("Прогресс держится под шапкой", Math.abs(sticky.progressTop - sticky.headerBottom) <= 1, JSON.stringify(sticky));
+
+    await page.goto(base + "/book.html#contents", { waitUntil: "load" });
+    await page.waitForTimeout(500);
+    const contentsAnchor = await page.evaluate(() => {
+      const target = document.querySelector("#contents");
+      const head = target.querySelector(".section-head");
+      const header = document.querySelector(".site-header").getBoundingClientRect();
+      return {
+        top: Math.round(target.getBoundingClientRect().top),
+        headTop: Math.round(head.getBoundingClientRect().top),
+        headerBottom: Math.round(header.bottom)
+      };
+    });
+    check("Якорь #contents не уходит под шапку", contentsAnchor.top >= contentsAnchor.headerBottom - 1, JSON.stringify(contentsAnchor));
+    check("Служебная строка #contents видна", contentsAnchor.headTop >= contentsAnchor.headerBottom + 20, JSON.stringify(contentsAnchor));
+
+    await page.goto(base + "/locations.html", { waitUntil: "load" });
+    await page.waitForTimeout(300);
+    const filterClosed = await page.evaluate(() => {
+      const toggle = document.querySelector("[data-filter-toggle]");
+      const panel = document.querySelector("[data-filter-panel]");
+      return {
+        expanded: toggle ? toggle.getAttribute("aria-expanded") : null,
+        open: panel ? panel.dataset.open : null,
+        display: panel ? getComputedStyle(panel).display : null
+      };
+    });
+    check("Фильтры закрыты на телефоне", filterClosed.expanded === "false" && filterClosed.open === "false" && filterClosed.display === "none", JSON.stringify(filterClosed));
+    await page.click("[data-filter-toggle]");
+    await page.waitForTimeout(150);
+    const filterOpen = await page.evaluate(() => {
+      const toggle = document.querySelector("[data-filter-toggle]");
+      const panel = document.querySelector("[data-filter-panel]");
+      return {
+        expanded: toggle ? toggle.getAttribute("aria-expanded") : null,
+        open: panel ? panel.dataset.open : null,
+        display: panel ? getComputedStyle(panel).display : null
+      };
+    });
+    check("Фильтры открываются", filterOpen.expanded === "true" && filterOpen.open === "true" && filterOpen.display !== "none", JSON.stringify(filterOpen));
+    await page.click("[data-filter-toggle]");
+    await page.waitForTimeout(100);
+
+    await page.goto(base + "/implants.html", { waitUntil: "load" });
+    await page.waitForTimeout(300);
+    const catalogue = await page.evaluate(() => {
+      const table = document.querySelector("table.data");
+      const wrap = document.querySelector(".table-wrap");
+      return {
+        display: table ? getComputedStyle(table).display : null,
+        scrollWidth: wrap ? Math.round(wrap.scrollWidth) : 0,
+        clientWidth: wrap ? Math.round(wrap.clientWidth) : 0,
+        first: document.querySelector("table.data tbody tr td.name a")?.textContent.trim() || ""
+      };
+    });
+    check("Каталог на телефоне собран карточками", catalogue.display === "block", JSON.stringify(catalogue));
+    check("Каталог не прокручивается внутри", catalogue.scrollWidth <= catalogue.clientWidth + 2, JSON.stringify(catalogue));
+    await page.selectOption("[data-mobile-sort]", "maker");
+    await page.waitForTimeout(200);
+    const sortedCatalogue = await page.evaluate(() => ({
+      first: document.querySelector("table.data tbody tr td.name a")?.textContent.trim() || ""
+    }));
+    check("Мобильная сортировка работает", !!catalogue.first && catalogue.first !== sortedCatalogue.first, catalogue.first + " -> " + sortedCatalogue.first);
 
     await page.goto(base + "/about.html#sound", { waitUntil: "load" });
     await page.waitForTimeout(300);
@@ -186,12 +263,14 @@ async function main() {
         ok: true,
         label: document.querySelector("[data-volume-value]")?.textContent || "",
         stored: localStorage.getItem("sol-volume"),
+        height: Math.round(input.getBoundingClientRect().height),
         state: window.SolSound?.getState?.() || null
       };
     });
     const levelsOk = volume.state && volume.state.musicVolume <= 0.18 && volume.state.effectVolume <= 0.09 && volume.state.voiceVolume <= 0.6;
     const sumOk = volume.state && volume.state.musicVolume + volume.state.effectVolume + volume.state.voiceVolume < 1;
     check("Ползунок громкости работает", volume.ok && volume.state?.masterVolume === 0.45 && volume.label === "45%" && volume.stored === "0.45", JSON.stringify(volume));
+    check("Ползунок громкости не меньше 44px", volume.height >= 44, String(volume.height));
     check("Уровни звука без перегруза", levelsOk && sumOk, JSON.stringify(volume.state));
 
     await page.goto(base + "/dossier.html?id=kira", { waitUntil: "load" });
