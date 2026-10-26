@@ -140,6 +140,33 @@
     }, 1);
   }
 
+  function lastReading() {
+    try {
+      var raw = window.localStorage.getItem("sol-reader-last");
+      if (!raw) return null;
+      var data = JSON.parse(raw);
+      if (!data || !data.n) return null;
+      var chapter = findChapter(data.n);
+      if (!chapter) return null;
+      return {
+        chapter: chapter,
+        percent: Math.max(0, Math.min(100, Math.round(Number(data.percent) || 0)))
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function continueReadingBlock() {
+    var last = lastReading();
+    if (!last) return "";
+    return '<a class="continue-card" href="' + U.chapterUrl(last.chapter.n) + '">' +
+      '<span class="cc-kicker">Продолжить чтение</span>' +
+      '<span class="cc-title">Глава ' + last.chapter.n + ". " + esc(last.chapter.title) + '</span>' +
+      '<span class="cc-progress">' + last.percent + "%</span>" +
+      "</a>";
+  }
+
   function infoCard(title, text) {
     return '<article class="info-card"><h3>' + esc(title) + '</h3><p class="meta meta--plain">' + esc(text) + "</p></article>";
   }
@@ -250,6 +277,7 @@
             '<blockquote class="cover-epigraph">«Дождь идёт по расписанию. Соль не спрашивает.»<cite>Из служебной записки «Тихого Света»</cite></blockquote>' +
           "</div>" +
           '<div class="cover-actions"><a class="link-arrow" href="book.html">Открыть книгу</a><a class="link-arrow" href="chapter.html?n=1">Читать первую главу</a></div>' +
+          continueReadingBlock() +
           "</div>" +
           '<div class="cover-side"><div class="cover-image">' +
             U.img("dam-fog", { alt: "Стеклянная дамба в тумане", loading: "eager", sizes: "(max-width: 900px) 100vw, 42vw" }) +
@@ -359,6 +387,7 @@
       '<section class="section--tight"><div class="wrap book-hero"><div class="book-hero-cover">' + U.cover("sol") + "</div>" +
         '<div class="book-hero-body"><p class="eyebrow">рукопись</p><h2>Роман в трёх частях</h2><p class="lead">Город на дамбе, «Соль-7» и женщина, которая подписала собственный приговор.</p><p class="book-logline">' + esc(SITE.meta.logline) + '</p>' +
         '<div class="book-actions"><a class="link-arrow" href="chapter.html?n=1">Читать главу 1</a><a class="link-arrow" href="chapter.html?n=' + latest + '">Читать главу ' + latest + '</a><a class="link-arrow" href="#contents">Содержание</a><a class="link-arrow" href="pitch.html">Питч для издателей</a><a class="link-arrow" href="library.html">Библиотека</a></div>' +
+        continueReadingBlock() +
         '<div class="book-facts">' + [
           ["Автор", SITE.meta.author], ["Год", SITE.meta.year], ["План", "34 главы"], ["Части", "3"], ["Город", SITE.meta.city], ["Доступно", published + " из 34 глав"]
         ].map(function (row) { return '<div class="book-fact"><span class="meta">' + esc(row[0]) + '</span><span class="book-fact-value">' + esc(row[1]) + "</span></div>"; }).join("") + "</div></div></div></section>" +
@@ -456,15 +485,62 @@
 
     var bar = document.getElementById("reader-progress-bar");
     var progressLabel = document.getElementById("reader-progress-label");
-    function progress() {
-      if (!bar) return;
+    var saveTimer = null;
+    var positionRestored = false;
+
+    function percentValue() {
       var height = document.documentElement.scrollHeight - window.innerHeight;
-      var value = height > 0 ? Math.min(100, (window.scrollY / height) * 100) : 0;
-      bar.style.width = value + "%";
+      return height > 0 ? Math.min(100, Math.max(0, (window.scrollY / height) * 100)) : 0;
+    }
+
+    function progress() {
+      var value = percentValue();
+      if (bar) bar.style.width = value + "%";
       if (progressLabel) progressLabel.textContent = Math.round(value) + "%";
     }
+
+    function savePosition() {
+      if (!positionRestored) return;
+      try {
+        var value = Math.round(percentValue());
+        var position = { scroll: window.scrollY, percent: value, updated: Date.now() };
+        window.localStorage.setItem("sol-reader-pos-" + chapter.n, JSON.stringify(position));
+        window.localStorage.setItem("sol-reader-last", JSON.stringify({
+          n: chapter.n,
+          title: chapter.title,
+          scroll: window.scrollY,
+          percent: value,
+          updated: Date.now()
+        }));
+      } catch (error) { /* без хранилища */ }
+    }
+
+    function applySavedPosition() {
+      try {
+        var raw = window.localStorage.getItem("sol-reader-pos-" + chapter.n);
+        if (!raw) return;
+        var position = JSON.parse(raw);
+        if (!position || typeof position.scroll !== "number") return;
+        var max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+        window.scrollTo(0, Math.min(Math.max(0, position.scroll), max));
+      } catch (error) { /* без хранилища */ }
+    }
+
+    function onReaderScroll() {
+      progress();
+      if (!positionRestored) return;
+      window.clearTimeout(saveTimer);
+      saveTimer = window.setTimeout(savePosition, 250);
+    }
+
+    applySavedPosition();
+    positionRestored = true;
     progress();
-    window.addEventListener("scroll", progress, { passive: true });
+    window.addEventListener("load", function () {
+      if (window.scrollY < 4) applySavedPosition();
+    }, { once: true });
+    window.addEventListener("scroll", onReaderScroll, { passive: true });
+    window.addEventListener("beforeunload", savePosition);
   }
 
   /* Мир */
