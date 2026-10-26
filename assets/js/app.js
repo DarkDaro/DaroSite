@@ -605,6 +605,7 @@
           '<a href="dossier.html?id=weave"><text x="24" y="520" class="cs-label">ПОЛОТНО / НЕОН</text></a><text x="980" y="520" class="cs-label cs-label--amber">КАРАНТИН Z-9</text>' +
         "</svg></div>" +
         '<div class="cross-list" aria-label="Локации на разрезе города">' + crossList + "</div>" +
+        '<div class="mt-24"><a class="link-arrow" href="map.html">Открыть интерактивную карту</a></div>' +
         '<p class="meta mt-16">Схема не в масштабе. Пять слоёв: море, дамба, верхний ярус, нижний город и Полотно.</p></div></section>' +
       '<section class="section"><div class="wrap">' + sectionHead("01 / каталоги", "Что описано в архиве") +
         '<div class="world-cats">' + cats.map(function (item) {
@@ -1280,6 +1281,140 @@
         '<h2 class="aside-title">Связи</h2><div class="relation-list">' + relations + '</div><h2 class="aside-title">Слой 2</h2><p class="seam">' + esc(item.seam) + "</p></aside></div>";
   }
 
+  function mapMarker(item) {
+    var point = item.map || { x: 0, y: 0 };
+    var labelX = point.x + 20;
+    var anchor = "start";
+    if (point.x > 980) {
+      labelX = point.x - 20;
+      anchor = "end";
+    }
+    return '<g class="map-node" data-map-id="' + esc(item.id) + '" role="button" tabindex="0" aria-label="' + esc(item.name) + '">' +
+      '<circle class="map-node-halo" cx="' + point.x + '" cy="' + point.y + '" r="14"></circle>' +
+      '<circle class="map-node-dot" cx="' + point.x + '" cy="' + point.y + '" r="5"></circle>' +
+      '<text class="map-node-label" x="' + labelX + '" y="' + (point.y + 4) + '" text-anchor="' + anchor + '">' + esc(item.name) + '</text>' +
+      '</g>';
+  }
+
+  function mapPanel(item) {
+    var groupLabel = item.group === "tier" ? "ярус" : item.group === "bottom" ? "дно" : "слой";
+    var eyebrow = norm(item.tier) === norm(groupLabel) ? item.tier : item.tier + " / " + groupLabel;
+    return '<p class="eyebrow">' + esc(eyebrow) + '</p>' +
+      '<h2>' + esc(item.name) + '</h2>' +
+      '<p>' + esc(item.summary) + '</p>' +
+      '<table class="id-table"><tr><th>Контроль</th><td>' + esc(item.control) + '</td></tr><tr><th>Доступ</th><td>' + esc(item.access) + '</td></tr><tr><th>Статус</th><td>' + esc(item.status) + '</td></tr></table>' +
+      '<p class="meta mt-16">' + esc(item.hazards) + '</p>' +
+      '<div class="mt-24"><a class="link-arrow" href="' + U.dossierUrl(item.id) + '">Открыть досье</a></div>';
+  }
+
+  function renderMap() {
+    var items = SITE.locations.slice();
+    var markers = items.map(mapMarker).join("");
+    var list = items.map(function (item, i) {
+      return '<button type="button" class="map-list-item" data-map-id="' + esc(item.id) + '">' +
+        '<span class="num">' + pad(i + 1) + '</span>' +
+        '<span class="map-list-name">' + esc(item.name) + '</span>' +
+        '<span class="meta">' + esc(item.tier) + '</span>' +
+        '</button>';
+    }).join("");
+    var svg = [
+      '<svg viewBox="0 0 1200 680" role="img" aria-label="Схематический разрез Кассия: Полотно, верхний ярус, мокрый квартал, дамба, порт, дно и соляные поля">',
+      '<defs>',
+      '<linearGradient id="map-sky" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#07131f"/><stop offset=".6" stop-color="#040810"/><stop offset="1" stop-color="#130716"/></linearGradient>',
+      '<linearGradient id="map-sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#081b2a"/><stop offset="1" stop-color="#02040a"/></linearGradient>',
+      '<pattern id="map-windows" width="18" height="20" patternUnits="userSpaceOnUse"><rect x="3" y="4" width="4" height="3" fill="rgba(79,232,255,.38)"/><rect x="11" y="13" width="3" height="2" fill="rgba(255,61,154,.42)"/></pattern>',
+      '<pattern id="map-hatch" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 8 0" stroke="rgba(210,160,92,.12)" stroke-width="1"/></pattern>',
+      '</defs>',
+      '<rect width="1200" height="680" fill="url(#map-sky)"/>',
+      '<rect y="430" width="1200" height="250" fill="url(#map-sea)"/>',
+      '<path d="M0 430 H1200" stroke="rgba(79,232,255,.35)"/>',
+      '<path d="M0 116 H1200" stroke="rgba(210,160,92,.24)" stroke-dasharray="6 7"/>',
+      '<text x="24" y="36" class="map-band-label map-band-label--amber">ПОЛОТНО / СЛОЙ 2</text>',
+      '<path d="M70 68 H300 M70 68 V106 M300 68 V106 M70 86 H300" fill="none" stroke="rgba(79,232,255,.16)"/>',
+      '<text x="24" y="150" class="map-band-label">ВЕРХНИЙ ЯРУС</text>',
+      '<rect x="220" y="132" width="70" height="120" fill="#08131f" stroke="rgba(79,232,255,.24)"/><rect x="300" y="104" width="54" height="148" fill="#08131f" stroke="rgba(79,232,255,.24)"/><rect x="366" y="158" width="86" height="94" fill="#08131f" stroke="rgba(79,232,255,.24)"/><rect x="470" y="184" width="64" height="68" fill="#08131f" stroke="rgba(79,232,255,.2)"/>',
+      '<g fill="url(#map-windows)" opacity=".9"><rect x="220" y="132" width="70" height="120"/><rect x="300" y="104" width="54" height="148"/><rect x="366" y="158" width="86" height="94"/><rect x="470" y="184" width="64" height="68"/></g>',
+      '<text x="24" y="286" class="map-band-label">МОКРЫЙ КВАРТАЛ</text>',
+      '<rect x="440" y="282" width="60" height="110" fill="#08131f" stroke="rgba(79,232,255,.2)"/><rect x="516" y="304" width="74" height="88" fill="#08131f" stroke="rgba(79,232,255,.2)"/><rect x="606" y="270" width="46" height="122" fill="#08131f" stroke="rgba(79,232,255,.18)"/><rect x="668" y="292" width="58" height="100" fill="#08131f" stroke="rgba(79,232,255,.18)"/><rect x="742" y="310" width="46" height="82" fill="#08131f" stroke="rgba(79,232,255,.18)"/><rect x="804" y="296" width="54" height="96" fill="#08131f" stroke="rgba(79,232,255,.18)"/>',
+      '<g fill="url(#map-windows)" opacity=".85"><rect x="440" y="282" width="60" height="110"/><rect x="516" y="304" width="74" height="88"/><rect x="606" y="270" width="46" height="122"/><rect x="668" y="292" width="58" height="100"/><rect x="742" y="310" width="46" height="82"/><rect x="804" y="296" width="54" height="96"/></g>',
+      '<path d="M150 430 L164 260 L206 260 L220 430" fill="#07131f" stroke="rgba(255,61,154,.62)"/>',
+      '<path d="M156 430 L168 266 L202 266 L214 430" fill="none" stroke="rgba(79,232,255,.25)"/>',
+      '<path d="M164 260 L185 236 L206 260" fill="none" stroke="rgba(255,61,154,.62)"/>',
+      '<text x="24" y="470" class="map-band-label">СТЕКЛЯННАЯ ДАМБА</text>',
+      '<path d="M840 430 V350 H900 M860 350 V392 M900 350 V392 M840 382 H900" fill="none" stroke="rgba(79,232,255,.26)"/>',
+      '<rect x="900" y="370" width="42" height="60" fill="#08131f" stroke="rgba(79,232,255,.2)"/>',
+      '<text x="980" y="470" class="map-band-label">ПОРТ КАССИЯ</text>',
+      '<rect x="360" y="520" width="780" height="132" fill="rgba(2,4,10,.66)" stroke="rgba(79,232,255,.16)"/>',
+      '<rect x="360" y="562" width="780" height="8" fill="rgba(255,61,154,.08)"/>',
+      '<path d="M380 604 H1120 M380 632 H1120" stroke="rgba(79,232,255,.1)"/>',
+      '<text x="24" y="590" class="map-band-label">ДНО / ТОННЕЛИ</text>',
+      '<text x="980" y="660" class="map-band-label map-band-label--amber">СОЛЯНЫЕ ПОЛЯ</text>',
+      '<g fill="rgba(237,231,218,.1)" stroke="rgba(237,231,218,.22)"><rect x="980" y="570" width="34" height="20"/><rect x="1022" y="570" width="34" height="20"/><rect x="1064" y="570" width="34" height="20"/><rect x="1106" y="570" width="34" height="20"/><rect x="1001" y="600" width="34" height="20"/><rect x="1043" y="600" width="34" height="20"/><rect x="1085" y="600" width="34" height="20"/></g>',
+      markers,
+      '</svg>'
+    ].join("");
+
+    main.innerHTML = pageHead("Мир / карта", "Разрез Кассия", "Десять локаций на пяти уровнях: от Полотна до соляных полей. Точки кликабельны.", ["10 локаций", "5 уровней", "слой 2"]) +
+      '<section class="section--tight"><div class="wrap">' +
+        '<div class="map-toolbar"><div class="map-filters" role="group" aria-label="Фильтр карты">' +
+          '<button type="button" class="map-filter" data-map-filter="all" aria-pressed="true">Все</button>' +
+          '<button type="button" class="map-filter" data-map-filter="tier" aria-pressed="false">Ярусы</button>' +
+          '<button type="button" class="map-filter" data-map-filter="bottom" aria-pressed="false">Дно</button>' +
+          '<button type="button" class="map-filter" data-map-filter="layer" aria-pressed="false">Слой</button>' +
+        '</div><p class="meta">Нажмите на точку или название.</p></div>' +
+        '<p class="meta map-mobile-note">Схему можно листать по горизонтали.</p>' +
+        '<div class="map-layout"><div class="map-canvas" tabindex="0" aria-label="Схема города, можно прокручивать по горизонтали">' + svg + '</div><aside class="map-panel" id="map-panel" aria-live="polite"></aside></div>' +
+        '<div class="map-list" aria-label="Локации на карте">' + list + '</div>' +
+        '<p class="meta mt-24">Схема не в масштабе. <a class="link-quiet" href="locations.html">Все локации</a></p>' +
+      '</div></section>';
+
+    var panel = document.getElementById("map-panel");
+    var nodes = Array.prototype.slice.call(main.querySelectorAll("[data-map-id]"));
+    var filterButtons = Array.prototype.slice.call(main.querySelectorAll("[data-map-filter]"));
+    var currentId = "upper-tier";
+
+    function select(id) {
+      var item = findLocation(id);
+      if (!item || !panel) return;
+      currentId = id;
+      panel.innerHTML = mapPanel(item);
+      nodes.forEach(function (node) {
+        node.setAttribute("aria-pressed", node.getAttribute("data-map-id") === id ? "true" : "false");
+      });
+    }
+
+    function applyMapFilter(group) {
+      var visible = [];
+      filterButtons.forEach(function (button) {
+        button.setAttribute("aria-pressed", button.getAttribute("data-map-filter") === group ? "true" : "false");
+      });
+      items.forEach(function (item) {
+        var show = group === "all" || item.group === group;
+        if (show) visible.push(item);
+        nodes.forEach(function (node) {
+          if (node.getAttribute("data-map-id") !== item.id) return;
+          node.classList.toggle("is-hidden", !show);
+          if (node.tagName === "BUTTON") node.hidden = !show;
+        });
+      });
+      if (visible.length && !visible.some(function (item) { return item.id === currentId; })) select(visible[0].id);
+    }
+
+    nodes.forEach(function (node) {
+      node.addEventListener("click", function () { select(node.getAttribute("data-map-id")); });
+      node.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          select(node.getAttribute("data-map-id"));
+        }
+      });
+    });
+    filterButtons.forEach(function (button) {
+      button.addEventListener("click", function () { applyMapFilter(button.getAttribute("data-map-filter")); });
+    });
+    select("upper-tier");
+  }
+
   /* Запуск */
 
   function reveal() {
@@ -1306,6 +1441,7 @@
     else if (page === "book") renderBook();
     else if (page === "chapter") renderChapter();
     else if (page === "world") renderWorld();
+    else if (page === "map") renderMap();
     else if (page === "characters") renderCharacters();
     else if (page === "locations") renderLocations();
     else if (page === "corporations") renderCorporations();

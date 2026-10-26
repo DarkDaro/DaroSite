@@ -134,6 +134,7 @@ const sitemapPages = [
   ["characters.html", "0.7", "monthly"],
   ["locations.html", "0.7", "monthly"],
   ["world.html", "0.7", "monthly"],
+  ["map.html", "0.7", "monthly"],
   ["gallery.html", "0.7", "monthly"],
   ["library.html", "0.6", "monthly"],
   ["corporations.html", "0.5", "monthly"],

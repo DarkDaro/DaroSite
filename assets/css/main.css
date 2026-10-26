@@ -1245,6 +1245,85 @@ table.data tr:hover td { background: rgba(237, 231, 218, 0.025); }
 .cross-section .cs-dash { stroke: var(--amber-line); stroke-width: 1; stroke-dasharray: 3 5; }
 .cross-section a:hover .cs-label { fill: var(--bone); }
 
+/* Карта Кассия */
+
+.map-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+.map-filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.map-filter {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--fog);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.map-filter:hover,
+.map-filter:focus-visible { border-color: var(--line-2); color: var(--bone); outline: none; }
+.map-filter[aria-pressed="true"] { border-color: var(--amber); color: var(--amber); background: rgba(210, 160, 92, 0.07); }
+.map-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: start; }
+.map-canvas { border: 1px solid var(--line); background: #03060c; overflow: hidden; }
+.map-canvas:focus-visible { outline: 1px solid var(--amber); outline-offset: 3px; }
+.map-canvas svg { width: 100%; height: auto; display: block; }
+.map-mobile-note { display: none; }
+.map-band-label { fill: var(--fog); font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; }
+.map-band-label--amber { fill: var(--amber); }
+.map-node { cursor: pointer; }
+.map-node:focus { outline: none; }
+.map-node.is-hidden { display: none; }
+.map-node .map-node-halo { fill: rgba(210, 160, 92, 0.08); stroke: var(--amber); stroke-width: 1; transition: fill 180ms var(--ease), stroke-width 180ms var(--ease); }
+.map-node .map-node-dot { fill: var(--amber); }
+.map-node .map-node-label {
+  fill: var(--bone);
+  font-family: var(--mono);
+  font-size: 12px;
+  paint-order: stroke;
+  stroke: rgba(3, 6, 12, 0.78);
+  stroke-width: 3px;
+}
+.map-node:hover .map-node-halo,
+.map-node[aria-pressed="true"] .map-node-halo,
+.map-node:focus-visible .map-node-halo { fill: rgba(210, 160, 92, 0.18); stroke-width: 2; }
+.map-panel { min-height: 100%; padding: 20px; border: 1px solid var(--line); background: var(--ink-2); }
+.map-panel h2 { margin: 8px 0 12px; font-family: var(--display); font-size: clamp(26px, 3vw, 38px); line-height: 1; }
+.map-panel p { color: var(--fog); }
+.map-panel .id-table { margin-top: 18px; }
+.map-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-top: 20px; }
+.map-list-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px 10px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--bone);
+  text-align: left;
+  cursor: pointer;
+}
+.map-list-item .num { grid-row: 1 / span 2; align-self: center; font-family: var(--mono); font-size: 10px; color: var(--amber); }
+.map-list-item .map-list-name { font-family: var(--serif); font-size: 14px; line-height: 1.25; }
+.map-list-item .meta { grid-column: 2; color: var(--fog); font-size: 9px; }
+.map-list-item:hover,
+.map-list-item:focus-visible,
+.map-list-item[aria-pressed="true"] { border-color: var(--amber); background: rgba(210, 160, 92, 0.07); outline: none; }
+@media (max-width: 980px) {
+  .map-layout { grid-template-columns: 1fr; }
+  .map-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .map-mobile-note { display: block; margin: -2px 0 10px; }
+  .map-canvas { overflow-x: auto; }
+  .map-canvas svg { min-width: 760px; }
+}
+@media (max-width: 560px) {
+  .map-list { grid-template-columns: 1fr; }
+  .map-panel { padding: 16px; }
+}
+
 .world-cats {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
