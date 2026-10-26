@@ -1193,6 +1193,15 @@ table.data tr:hover td { background: rgba(237, 231, 218, 0.025); }
   padding: 0.08em 0.12em 0 0;
   color: var(--amber);
 }
+.reader-text > p.no-dropcap:first-of-type::first-letter {
+  float: none;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  padding: 0;
+  color: inherit;
+  text-shadow: none;
+}
 .reader-text h2 { margin: 1.6em 0 0.6em; font-size: clamp(28px, 3vw, 40px); }
 .reader-text blockquote {
   margin: 1.6em 0;
@@ -1316,7 +1325,7 @@ table.data tr:hover td { background: rgba(237, 231, 218, 0.025); }
 }
 @media (max-width: 700px) {
   .map-mobile-note { display: block; margin: -2px 0 10px; }
-  .map-canvas { overflow-x: auto; }
+  .map-canvas { overflow-x: auto; box-shadow: inset 26px 0 22px -22px #03060c, inset -26px 0 22px -22px #03060c; }
   .map-canvas svg { min-width: 760px; }
 }
 @media (max-width: 560px) {
@@ -1366,7 +1375,7 @@ table.data tr:hover td { background: rgba(237, 231, 218, 0.025); }
 }
 @media (max-width: 700px) {
   .graph-mobile-note { display: block; margin: -2px 0 10px; }
-  .graph-canvas { overflow-x: auto; }
+  .graph-canvas { overflow-x: auto; box-shadow: inset 26px 0 22px -22px #03060c, inset -26px 0 22px -22px #03060c; }
   .graph-canvas svg { min-width: 760px; }
 }
 

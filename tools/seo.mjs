@@ -8,6 +8,8 @@ const ROOT = path.resolve(here, "..");
 const BASE = "https://darkdaro.github.io/DaroSite/";
 const TODAY = "2026-10-26";
 const IMAGE = BASE + "assets/art/dam-fog-1280.webp";
+const IMAGE_WIDTH = 1280;
+const IMAGE_HEIGHT = 853;
 
 const context = { window: {} };
 vm.createContext(context);
@@ -48,7 +50,14 @@ function canonicalFor(file) {
 }
 
 function jsonLdFor(file, title, description, canonical) {
-  if (file !== "index.html" && file !== "book.html") return "";
+  const graph = [{
+    "@type": "WebPage",
+    name: title,
+    description,
+    url: canonical,
+    inLanguage: "ru",
+    isPartOf: { "@type": "WebSite", name: "Соляной протокол", url: BASE }
+  }];
 
   const book = {
     "@type": "Book",
@@ -61,26 +70,32 @@ function jsonLdFor(file, title, description, canonical) {
     image: IMAGE
   };
 
-  const data = file === "index.html"
-    ? {
-        "@context": "https://schema.org",
-        "@graph": [
-          { "@type": "WebSite", name: title, url: BASE, inLanguage: "ru", description },
-          book
-        ]
-      }
-    : {
-        "@context": "https://schema.org",
-        "@graph": [book]
-      };
+  if (file === "index.html") {
+    graph.push({ "@type": "WebSite", name: "Соляной протокол", url: BASE, inLanguage: "ru", description });
+    graph.push(book);
+  }
+  if (file === "book.html") graph.push(book);
+  if (file === "about.html") {
+    graph.push({
+      "@type": "Person",
+      name: SITE.meta.author || "Илья Верес",
+      description: SITE.pitch.authorShort || description,
+      url: canonical
+    });
+  }
 
-  return '<script type="application/ld+json">' + JSON.stringify(data) + "</script>";
+  return '<script type="application/ld+json">' + JSON.stringify({ "@context": "https://schema.org", "@graph": graph }) + "</script>";
 }
 
 function seoBlock(file, title, description, canonical) {
   const type = file === "book.html" ? "book" : file === "pitch.html" ? "article" : "website";
   const tags = [
     '<link rel="canonical" href="' + attr(canonical) + '">',
+    '<link rel="alternate" hreflang="ru" href="' + attr(canonical) + '">',
+    '<link rel="alternate" hreflang="x-default" href="' + attr(canonical) + '">',
+    '<link rel="sitemap" type="application/xml" href="' + BASE + 'sitemap.xml">',
+    '<meta name="author" content="' + attr(SITE.meta.author || "Илья Верес") + '">',
+    '<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">',
     '<meta property="og:locale" content="ru_RU">',
     '<meta property="og:site_name" content="Соляной протокол">',
     '<meta property="og:type" content="' + type + '">',
@@ -88,11 +103,14 @@ function seoBlock(file, title, description, canonical) {
     '<meta property="og:description" content="' + attr(description) + '">',
     '<meta property="og:url" content="' + attr(canonical) + '">',
     '<meta property="og:image" content="' + attr(IMAGE) + '">',
+    '<meta property="og:image:width" content="' + IMAGE_WIDTH + '">',
+    '<meta property="og:image:height" content="' + IMAGE_HEIGHT + '">',
     '<meta property="og:image:alt" content="Стеклянная дамба в тумане">',
     '<meta name="twitter:card" content="summary_large_image">',
     '<meta name="twitter:title" content="' + attr(title) + '">',
     '<meta name="twitter:description" content="' + attr(description) + '">',
-    '<meta name="twitter:image" content="' + attr(IMAGE) + '">'
+    '<meta name="twitter:image" content="' + attr(IMAGE) + '">',
+    '<meta name="twitter:image:alt" content="Стеклянная дамба в тумане">'
   ];
   if (file === "book.html") {
     tags.push('<meta property="book:author" content="' + attr(SITE.meta.author || "Илья Верес") + '">');

@@ -259,8 +259,11 @@
   }
 
   function paragraphs(text) {
+    var index = 0;
     return text.split(/\n\s*\n/).map(function (part) { return part.trim(); }).filter(Boolean).map(function (part) {
-      return "<p>" + esc(part.replace(/\n/g, " ")) + "</p>";
+      var dateStart = index === 0 && /^\d{1,2}\s+[а-яё]+(?:\s+\d{4})?,\s+\d{1,2}:\d{2}/i.test(part);
+      index += 1;
+      return "<p" + (dateStart ? ' class="no-dropcap"' : "") + ">" + esc(part.replace(/\n/g, " ")) + "</p>";
     }).join("");
   }
 
@@ -483,6 +486,25 @@
       var node = document.querySelector("meta[" + item[0] + '="' + item[1] + '"]');
       if (node) node.setAttribute("content", item[2]);
     });
+    var oldSchema = document.getElementById("chapter-schema");
+    if (oldSchema) oldSchema.remove();
+    var chapterSchema = document.createElement("script");
+    chapterSchema.type = "application/ld+json";
+    chapterSchema.id = "chapter-schema";
+    chapterSchema.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: chapterTitle,
+      description: chapterDescription,
+      url: chapterUrl,
+      mainEntityOfPage: chapterUrl,
+      inLanguage: "ru",
+      author: { "@type": "Person", name: SITE.meta.author || "Илья Верес" },
+      isPartOf: { "@type": "Book", name: SITE.meta.title || "Соляной протокол", url: "https://darkdaro.github.io/DaroSite/book.html" },
+      position: chapter.n,
+      wordCount: textWords(text)
+    });
+    document.head.appendChild(chapterSchema);
 
     var size = 19;
     try {
