@@ -12,6 +12,7 @@
     "check": "node tools/check.mjs",
     "content": "node tools/content.mjs",
     "html": "node tools/html.mjs",
+    "seo": "node tools/seo.mjs",
     "assets": "node tools/assets.mjs",
     "music": "node tools/music.mjs",
     "crawl": "node tools/crawl.mjs",

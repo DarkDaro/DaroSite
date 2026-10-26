@@ -425,7 +425,16 @@
       '<aside class="reader-notes"><p class="eyebrow">пометки</p>' + (notes.length ? notes.map(function (note) { return '<div class="note-item"><span class="note-no">' + esc(note.type) + '</span><p><a class="link" href="' + note.href + '">' + esc(note.title) + "</a></p></div>"; }).join("") : '<p class="meta mt-16">К этой главе нет отдельных пометок.</p>') + '<p class="seam">' + esc(chapter.seam || SITE.seams.book) + "</p></aside></div>" +
       seamBlock(SITE.seams.book);
 
-    document.title = "Глава " + chapter.n + ". " + chapter.title + " / Соляной протокол";
+    var chapterTitle = "Глава " + chapter.n + ". " + chapter.title + " / Соляной протокол";
+    var chapterUrl = "https://darkdaro.github.io/DaroSite/chapter.html?n=" + chapter.n;
+    var chapterDescription = String(chapter.synopsis || SITE.meta.logline || "").replace(/\s+/g, " ").trim().slice(0, 220);
+    document.title = chapterTitle;
+    var canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.setAttribute("href", chapterUrl);
+    [["property", "og:url", chapterUrl], ["property", "og:title", chapterTitle], ["property", "og:description", chapterDescription], ["name", "twitter:title", chapterTitle], ["name", "twitter:description", chapterDescription]].forEach(function (item) {
+      var node = document.querySelector("meta[" + item[0] + '="' + item[1] + '"]');
+      if (node) node.setAttribute("content", item[2]);
+    });
 
     var size = 19;
     try {

@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /docs/
+Disallow: /tools/
+Disallow: /exports/
+Disallow: /package.json
+Disallow: /opencode.json
+Disallow: /anti-slop
+Disallow: /README.md
+
+Sitemap: https://darkdaro.github.io/DaroSite/sitemap.xml
