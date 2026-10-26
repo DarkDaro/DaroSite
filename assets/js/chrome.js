@@ -123,6 +123,14 @@
           '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 21 21"></path></svg>' +
           '<input type="search" id="search-input" placeholder="Глава, имя, место, термин" autocomplete="off" spellcheck="false" aria-label="Поисковый запрос">' +
         "</div>" +
+        '<div class="search-filters" role="group" aria-label="Фильтр поиска">' +
+          '<button type="button" class="search-filter" data-search-filter="all" aria-pressed="true">Все</button>' +
+          '<button type="button" class="search-filter" data-search-filter="Главы" aria-pressed="false">Главы</button>' +
+          '<button type="button" class="search-filter" data-search-filter="Персонажи" aria-pressed="false">Персонажи</button>' +
+          '<button type="button" class="search-filter" data-search-filter="Локации" aria-pressed="false">Локации</button>' +
+          '<button type="button" class="search-filter" data-search-filter="Словарь" aria-pressed="false">Словарь</button>' +
+          '<button type="button" class="search-filter" data-search-filter="Галерея" aria-pressed="false">Галерея</button>' +
+        "</div>" +
         '<p class="meta search-hint" id="search-hint">Начните вводить. Стрелки и Enter работают.</p>' +
         '<div class="search-results" id="search-results"></div>' +
       "</div>" +
@@ -172,13 +180,13 @@
       items.push({ title: chapter.n + ". " + chapter.title, type: "Глава", group: "Главы", url: "chapter.html?n=" + chapter.n, text: chapter.synopsis || "" });
     });
     SITE.characters.forEach(function (item) {
-      items.push({ title: item.name, type: "Досье", group: "Персонажи", url: "dossier.html?id=" + encodeURIComponent(item.id), text: [item.role, item.aliases, item.faction, item.quote, (item.tags || []).join(" ")].join(" ") });
+      items.push({ title: item.name, type: "Досье", group: "Персонажи", url: "dossier.html?id=" + encodeURIComponent(item.id), text: [item.role, item.aliases, item.faction, item.quote, (item.tags || []).join(" "), (item.bio || []).join(" ")].join(" ") });
     });
     SITE.locations.forEach(function (item) {
-      items.push({ title: item.name, type: "Локация", group: "Локации", url: "dossier.html?id=" + encodeURIComponent(item.id), text: [item.tier, item.summary, item.control, item.access].join(" ") });
+      items.push({ title: item.name, type: "Локация", group: "Локации", url: "dossier.html?id=" + encodeURIComponent(item.id), text: [item.tier, item.summary, item.control, item.access, (item.bio || []).join(" ")].join(" ") });
     });
     SITE.corporations.forEach(function (item) {
-      items.push({ title: item.name, type: "Организация", group: "Организации", url: "dossier.html?id=" + encodeURIComponent(item.id), text: [item.sector, item.summary, item.motto].join(" ") });
+      items.push({ title: item.name, type: "Организация", group: "Организации", url: "dossier.html?id=" + encodeURIComponent(item.id), text: [item.sector, item.summary, item.motto, (item.bio || []).join(" ")].join(" ") });
     });
     SITE.implants.forEach(function (item) {
       items.push({ title: item.name, type: "Имплантат", group: "Имплантаты", url: "dossier.html?id=" + encodeURIComponent(item.id), text: [item.cls, item.maker, item.summary, item.bio].join(" ") });
@@ -213,12 +221,59 @@
     });
     var selected = 0;
     var current = [];
+    var activeFilter = "all";
+
+    function escapeRegExp(value) {
+      return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function queryTerms(query) {
+      return String(query).trim().split(/\s+/).filter(function (term) { return term.length >= 2; });
+    }
+
+    function highlight(text, query) {
+      var safe = esc(text);
+      var terms = queryTerms(query);
+      if (!terms.length) return safe;
+      var pattern = terms.map(function (term) { return escapeRegExp(esc(term)); }).join("|");
+      try {
+        return safe.replace(new RegExp("(" + pattern + ")", "gi"), "<mark>$1</mark>");
+      } catch (error) {
+        return safe;
+      }
+    }
+
+    function snippet(text, query) {
+      var value = String(text || "").replace(/\s+/g, " ").trim();
+      if (!value) return "";
+      var terms = queryTerms(query);
+      var at = -1;
+      terms.forEach(function (term) {
+        var found = value.toLowerCase().indexOf(term.toLowerCase());
+        if (found >= 0 && (at < 0 || found < at)) at = found;
+      });
+      if (at < 0) at = 0;
+      var start = Math.max(0, at - 54);
+      var end = Math.min(value.length, at + 128);
+      var cut = value.slice(start, end);
+      if (start > 0) cut = "…" + cut;
+      if (end < value.length) cut += "…";
+      return cut;
+    }
+
+    function setFilter(value) {
+      activeFilter = value || "all";
+      doc.querySelectorAll("[data-search-filter]").forEach(function (button) {
+        button.setAttribute("aria-pressed", button.getAttribute("data-search-filter") === activeFilter ? "true" : "false");
+      });
+    }
 
     function open() {
       if (typeof dialog.showModal === "function") dialog.showModal();
       else dialog.setAttribute("open", "");
       input.value = "";
       results.innerHTML = "";
+      setFilter("all");
       hint.textContent = "Начните вводить. Стрелки и Enter работают.";
       window.setTimeout(function () { input.focus(); }, 30);
     }
@@ -229,20 +284,23 @@
     }
 
     function render(list) {
-      current = list;
       selected = 0;
-      if (!input.value.trim()) {
+      var query = input.value.trim();
+      var filtered = activeFilter === "all" ? list : list.filter(function (item) { return item.group === activeFilter; });
+      filtered = filtered.slice(0, 40);
+      current = filtered;
+      if (!query) {
         results.innerHTML = "";
         hint.textContent = "Начните вводить. Стрелки и Enter работают.";
         return;
       }
-      if (!list.length) {
+      if (!filtered.length) {
         results.innerHTML = '<p class="search-empty">Ничего не найдено. Попробуйте «Кира», «соль» или «дамба».</p>';
         hint.textContent = "0 результатов";
         return;
       }
       var groups = {};
-      list.forEach(function (item) {
+      filtered.forEach(function (item) {
         if (!groups[item.group]) groups[item.group] = [];
         groups[item.group].push(item);
       });
@@ -251,12 +309,16 @@
         html += '<div class="search-group"><h3>' + esc(group) + "</h3>";
         groups[group].forEach(function (item) {
           var pos = current.indexOf(item);
-          html += '<a class="search-result" href="' + esc(item.url) + '" data-pos="' + pos + '"><span class="r-title">' + esc(item.title) + '</span><span class="r-type">' + esc(item.type) + "</span></a>";
+          html += '<a class="search-result" href="' + esc(item.url) + '" data-pos="' + pos + '">' +
+            '<span class="r-title">' + highlight(item.title, query) + '</span>' +
+            '<span class="r-type">' + esc(item.type) + '</span>' +
+            '<span class="r-snippet">' + highlight(snippet(item.text, query), query) + '</span>' +
+            '</a>';
         });
         html += "</div>";
       });
       results.innerHTML = html;
-      hint.textContent = list.length + " " + plural(list.length, ["результат", "результата", "результатов"]);
+      hint.textContent = filtered.length + " " + plural(filtered.length, ["результат", "результата", "результатов"]);
       mark();
     }
 
@@ -279,7 +341,7 @@
         hint.textContent = "Введите хотя бы два символа.";
         return;
       }
-      var found = fuse.search(query).slice(0, 30).map(function (entry) { return entry.item; });
+      var found = fuse.search(query).map(function (entry) { return entry.item; });
       render(found);
     }
 
@@ -305,6 +367,13 @@
     results.addEventListener("click", function (event) {
       var link = event.target.closest(".search-result");
       if (link) close();
+    });
+    doc.querySelectorAll("[data-search-filter]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        setFilter(button.getAttribute("data-search-filter"));
+        onInput();
+        input.focus();
+      });
     });
     doc.querySelectorAll("[data-open-search]").forEach(function (button) {
       button.addEventListener("click", open);

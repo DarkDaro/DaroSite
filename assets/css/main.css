@@ -511,6 +511,23 @@ dialog::backdrop { background: rgba(4, 5, 5, 0.78); }
   color: var(--bone);
 }
 .search-field input::placeholder { color: var(--fog-dark); }
+.search-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.search-filter {
+  min-height: 44px;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--fog);
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.3;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.search-filter:hover,
+.search-filter:focus-visible { border-color: var(--line-2); color: var(--bone); outline: none; }
+.search-filter[aria-pressed="true"] { border-color: var(--amber); color: var(--amber); background: rgba(210, 160, 92, 0.07); }
 .search-hint { margin-top: 10px; }
 .search-results { margin-top: 18px; }
 .search-group { margin-top: 18px; }
@@ -523,16 +540,19 @@ dialog::backdrop { background: rgba(4, 5, 5, 0.78); }
   margin-bottom: 6px;
 }
 .search-result {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: baseline;
-  gap: 12px;
+  gap: 2px 12px;
   padding: 9px 6px;
   border-bottom: 1px solid var(--line);
   text-decoration: none;
 }
 .search-result:hover, .search-result[aria-selected="true"] { background: rgba(210, 160, 92, 0.08); }
-.search-result .r-title { font-family: var(--serif); font-size: 16px; }
-.search-result .r-type { margin-left: auto; font-family: var(--mono); font-size: 9px; color: var(--fog-dark); text-transform: uppercase; letter-spacing: 0.1em; }
+.search-result .r-title { grid-column: 1; font-family: var(--serif); font-size: 16px; }
+.search-result .r-type { grid-column: 2; grid-row: 1; font-family: var(--mono); font-size: 9px; color: var(--fog-dark); text-transform: uppercase; letter-spacing: 0.1em; }
+.search-result .r-snippet { grid-column: 1 / -1; color: var(--fog); font-size: 13px; line-height: 1.45; }
+.search-result mark { background: var(--amber); color: var(--ink); padding: 0 2px; }
 .search-empty { padding: 20px 4px; color: var(--fog); font-family: var(--mono); font-size: 11px; }
 
 /* Пластины и обложки */
