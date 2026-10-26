@@ -56,7 +56,7 @@
   var nav = [
     { label: "Библиотека", href: "library.html", pages: ["library"] },
     { label: "Главы", href: "book.html", pages: ["book", "chapter"] },
-    { label: "Мир", href: "world.html", pages: ["world", "characters", "locations", "corporations", "implants", "weapons", "dossier"] },
+    { label: "Мир", href: "world.html", pages: ["world", "characters", "locations", "corporations", "implants", "weapons", "dossier", "graph"] },
     { label: "Карта", href: "map.html", pages: ["map"] },
     { label: "Галерея", href: "gallery.html", pages: ["gallery"] },
     { label: "Автор", href: "about.html", pages: ["about"] }
@@ -104,7 +104,7 @@
       '<div class="wrap">' +
         '<div class="footer-grid">' +
           '<div><h3>Архив</h3><a href="library.html">Библиотека</a><a href="book.html">Соляной протокол</a><a href="pitch.html">Питч для издателей</a><a href="gallery.html">Галерея пластин</a><a href="about.html">Об авторе</a></div>' +
-          '<div><h3>Мир</h3><a href="characters.html">Персонажи</a><a href="locations.html">Локации</a><a href="map.html">Карта</a><a href="corporations.html">Организации</a><a href="implants.html">Имплантаты</a><a href="weapons.html">Вооружение</a></div>' +
+          '<div><h3>Мир</h3><a href="characters.html">Персонажи</a><a href="graph.html">Граф связей</a><a href="locations.html">Локации</a><a href="map.html">Карта</a><a href="corporations.html">Организации</a><a href="implants.html">Имплантаты</a><a href="weapons.html">Вооружение</a></div>' +
           '<div><h3>Служебное</h3><a href="world.html">Разрез Кассия</a><a href="book.html#contents">Содержание</a><a href="about.html#credits">Изображения и лицензии</a><a href="about.html#project">О проекте</a><a href="about.html#sound">Настройки звука</a></div>' +
           '<div><h3>Колофон</h3><p class="footer-note">Демонстрационный артбук-архив. Книга, автор и город вымышлены. Фотографии взяты по свободным лицензиям, авторы указаны в кредитах.</p></div>' +
         "</div>" +

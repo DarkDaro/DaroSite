@@ -641,6 +641,7 @@
     var total = SITE.characters.length;
 
     main.innerHTML = pageHead("Мир / персонажи", "Досье", total + " человек, которые знают слишком много. Часть лиц открыта, часть не фиксируется.", [total + " досье", portraits + " " + U.plural(portraits, ["открытый портрет", "открытых портрета", "открытых портретов"]), "демонстрационные лица"]) +
+      '<div class="wrap mt-16"><a class="link-arrow" href="graph.html">Граф связей</a></div>' +
       '<div class="toolbar"><div class="wrap"><div class="toolbar-row toolbar-row--characters"><div class="tabs" role="tablist" aria-label="Группы персонажей">' + groups.map(function (group) {
         return '<button class="tab" type="button" role="tab" data-group="' + group.id + '" aria-selected="' + (group.id === "all" ? "true" : "false") + '">' + esc(group.label) + '<span class="count">' + counts[group.id] + "</span></button>";
       }).join("") + '</div><div class="toolbar-spacer"></div><div class="tool-field"><label for="char-query">Поиск</label><input id="char-query" type="search" placeholder="имя, роль" autocomplete="off"></div><div class="tool-field"><label for="char-sort">Сортировка</label><select id="char-sort"><option value="name">по имени</option><option value="role">по роли</option><option value="chapter">по главе</option></select></div><div class="view-toggle" role="group" aria-label="Вид каталога"><button type="button" data-view="grid" aria-pressed="true">Сетка</button><button type="button" data-view="list" aria-pressed="false">Список</button></div></div></div></div>' +
@@ -1413,6 +1414,144 @@
       button.addEventListener("click", function () { applyMapFilter(button.getAttribute("data-map-filter")); });
     });
     select("upper-tier");
+    var mapCanvas = main.querySelector(".map-canvas");
+    if (mapCanvas && mapCanvas.scrollWidth > mapCanvas.clientWidth) {
+      mapCanvas.scrollLeft = (mapCanvas.scrollWidth - mapCanvas.clientWidth) / 2;
+    }
+  }
+
+  function graphEdges() {
+    var edges = [];
+    var seen = {};
+    SITE.characters.forEach(function (item) {
+      (item.relations || []).forEach(function (relation) {
+        var target = findCharacter(relation.id);
+        if (!target || target.id === item.id) return;
+        var key = [item.id, target.id].sort().join("|");
+        if (seen[key]) return;
+        seen[key] = true;
+        edges.push({ a: item.id, b: target.id, role: relation.role });
+      });
+    });
+    return edges;
+  }
+
+  function graphNode(item) {
+    var point = item.graph || { x: 0, y: 0 };
+    return '<g class="graph-node" data-graph-id="' + esc(item.id) + '" role="button" tabindex="0" aria-label="' + esc(item.name) + ', ' + esc(item.role) + '">' +
+      '<circle class="graph-node-ring" cx="' + point.x + '" cy="' + point.y + '" r="24"></circle>' +
+      '<text class="graph-node-mark" x="' + point.x + '" y="' + (point.y + 4) + '">' + esc(initials(item.name)) + '</text>' +
+      '<text class="graph-node-label" x="' + point.x + '" y="' + (point.y + 42) + '">' + esc(item.name) + '</text>' +
+      '</g>';
+  }
+
+  function graphEdge(edge) {
+    var a = findCharacter(edge.a);
+    var b = findCharacter(edge.b);
+    if (!a || !b || !a.graph || !b.graph) return "";
+    return '<g class="graph-edge" data-edge-a="' + esc(a.id) + '" data-edge-b="' + esc(b.id) + '">' +
+      '<title>' + esc(a.name + " / " + b.name + ": " + edge.role) + '</title>' +
+      '<line x1="' + a.graph.x + '" y1="' + a.graph.y + '" x2="' + b.graph.x + '" y2="' + b.graph.y + '"></line>' +
+      '</g>';
+  }
+
+  function graphPanel(item) {
+    var groupLabel = { main: "Основной состав", secondary: "Второстепенный", outside: "Вне системы" }[item.group] || "Персонаж";
+    var relations = (item.relations || []).map(function (relation) {
+      var target = findCharacter(relation.id);
+      if (!target) return "";
+      return '<a class="relation-row" href="' + U.dossierUrl(target.id) + '"><span class="rel-name">' + esc(target.name) + '</span><span class="rel-role">' + esc(relation.role) + '</span></a>';
+    }).join("");
+    return '<p class="eyebrow">' + esc(groupLabel) + '</p>' +
+      '<h2>' + esc(item.name) + '</h2>' +
+      '<p>' + esc(item.role) + '</p>' +
+      '<p class="meta">' + esc(item.status) + ' / ' + esc(item.faction) + '</p>' +
+      '<div class="relation-list mt-16">' + (relations || '<p class="meta">Связей в архиве нет.</p>') + '</div>' +
+      '<div class="mt-24"><a class="link-arrow" href="' + U.dossierUrl(item.id) + '">Открыть досье</a></div>';
+  }
+
+  function renderGraph() {
+    var items = SITE.characters.slice();
+    var edges = graphEdges();
+    var lines = edges.map(graphEdge).join("");
+    var nodes = items.map(graphNode).join("");
+    var svg = '<svg viewBox="0 0 840 600" role="img" aria-label="Граф связей персонажей Соляного протокола">' +
+      '<rect width="840" height="600" fill="transparent"></rect>' +
+      lines + nodes +
+      '</svg>';
+
+    main.innerHTML = pageHead("Мир / связи", "Кто кому что должен", "Одиннадцать досье и связи между ними: кураторы, свидетели, долги и подопечные.", [items.length + " персонажей", edges.length + " связей", "простой SVG"]) +
+      '<section class="section--tight"><div class="wrap">' +
+        '<div class="graph-toolbar"><div class="graph-filters" role="group" aria-label="Фильтр графа">' +
+          '<button type="button" class="graph-filter" data-graph-filter="all" aria-pressed="true">Все</button>' +
+          '<button type="button" class="graph-filter" data-graph-filter="main" aria-pressed="false">Основные</button>' +
+          '<button type="button" class="graph-filter" data-graph-filter="secondary" aria-pressed="false">Второстепенные</button>' +
+          '<button type="button" class="graph-filter" data-graph-filter="outside" aria-pressed="false">Вне системы</button>' +
+        '</div><p class="meta">Нажмите на узел или имя.</p></div>' +
+        '<p class="meta graph-mobile-note">Граф можно листать по горизонтали.</p>' +
+        '<div class="graph-layout"><div class="graph-canvas" tabindex="0" aria-label="Граф связей, можно прокручивать по горизонтали">' + svg + '</div><aside class="map-panel graph-panel" id="graph-panel" aria-live="polite"></aside></div>' +
+        '<p class="meta mt-24">Связи взяты из досье. <a class="link-quiet" href="characters.html">Все персонажи</a></p>' +
+      '</div></section>';
+
+    var panel = document.getElementById("graph-panel");
+    var nodeElements = Array.prototype.slice.call(main.querySelectorAll("[data-graph-id]"));
+    var edgeElements = Array.prototype.slice.call(main.querySelectorAll(".graph-edge"));
+    var filterButtons = Array.prototype.slice.call(main.querySelectorAll("[data-graph-filter]"));
+    var currentId = "kira";
+
+    function select(id) {
+      var item = findCharacter(id);
+      if (!item || !panel) return;
+      currentId = id;
+      panel.innerHTML = graphPanel(item);
+      nodeElements.forEach(function (node) {
+        node.setAttribute("aria-pressed", node.getAttribute("data-graph-id") === id ? "true" : "false");
+      });
+      edgeElements.forEach(function (edge) {
+        var active = edge.getAttribute("data-edge-a") === id || edge.getAttribute("data-edge-b") === id;
+        edge.classList.toggle("is-active", active);
+      });
+    }
+
+    function applyGraphFilter(group) {
+      var visible = {};
+      filterButtons.forEach(function (button) {
+        button.setAttribute("aria-pressed", button.getAttribute("data-graph-filter") === group ? "true" : "false");
+      });
+      items.forEach(function (item) {
+        var show = group === "all" || item.group === group;
+        visible[item.id] = show;
+        nodeElements.forEach(function (node) {
+          if (node.getAttribute("data-graph-id") === item.id) node.classList.toggle("is-hidden", !show);
+        });
+      });
+      edgeElements.forEach(function (edge) {
+        var show = visible[edge.getAttribute("data-edge-a")] && visible[edge.getAttribute("data-edge-b")];
+        edge.classList.toggle("is-hidden", !show);
+      });
+      if (!visible[currentId]) {
+        var first = items.find(function (item) { return visible[item.id]; });
+        if (first) select(first.id);
+      }
+    }
+
+    nodeElements.forEach(function (node) {
+      node.addEventListener("click", function () { select(node.getAttribute("data-graph-id")); });
+      node.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          select(node.getAttribute("data-graph-id"));
+        }
+      });
+    });
+    filterButtons.forEach(function (button) {
+      button.addEventListener("click", function () { applyGraphFilter(button.getAttribute("data-graph-filter")); });
+    });
+    select("kira");
+    var graphCanvas = main.querySelector(".graph-canvas");
+    if (graphCanvas && graphCanvas.scrollWidth > graphCanvas.clientWidth) {
+      graphCanvas.scrollLeft = (graphCanvas.scrollWidth - graphCanvas.clientWidth) / 2;
+    }
   }
 
   /* Запуск */
@@ -1442,6 +1581,7 @@
     else if (page === "chapter") renderChapter();
     else if (page === "world") renderWorld();
     else if (page === "map") renderMap();
+    else if (page === "graph") renderGraph();
     else if (page === "characters") renderCharacters();
     else if (page === "locations") renderLocations();
     else if (page === "corporations") renderCorporations();

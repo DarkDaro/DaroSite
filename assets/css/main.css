@@ -1324,6 +1324,52 @@ table.data tr:hover td { background: rgba(237, 231, 218, 0.025); }
   .map-panel { padding: 16px; }
 }
 
+/* Граф связей */
+
+.graph-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+.graph-filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.graph-filter {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--fog);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.graph-filter:hover,
+.graph-filter:focus-visible { border-color: var(--line-2); color: var(--bone); outline: none; }
+.graph-filter[aria-pressed="true"] { border-color: var(--amber); color: var(--amber); background: rgba(210, 160, 92, 0.07); }
+.graph-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: start; }
+.graph-canvas { border: 1px solid var(--line); background: #03060c; overflow: hidden; }
+.graph-canvas:focus-visible { outline: 1px solid var(--amber); outline-offset: 3px; }
+.graph-canvas svg { width: 100%; height: auto; display: block; }
+.graph-mobile-note { display: none; }
+.graph-node { cursor: pointer; }
+.graph-node:focus { outline: none; }
+.graph-node.is-hidden { display: none; }
+.graph-node .graph-node-ring { fill: #08131f; stroke: var(--amber); stroke-width: 1.2; transition: fill 180ms var(--ease), stroke-width 180ms var(--ease); }
+.graph-node .graph-node-mark { fill: var(--bone); font-family: var(--mono); font-size: 12px; text-anchor: middle; }
+.graph-node .graph-node-label { fill: var(--bone); font-family: var(--mono); font-size: 11px; text-anchor: middle; paint-order: stroke; stroke: rgba(3, 6, 12, 0.82); stroke-width: 3px; }
+.graph-node:hover .graph-node-ring,
+.graph-node[aria-pressed="true"] .graph-node-ring,
+.graph-node:focus-visible .graph-node-ring { fill: rgba(210, 160, 92, 0.2); stroke-width: 2.2; }
+.graph-edge line { stroke: rgba(210, 160, 92, 0.22); stroke-width: 1; transition: stroke 180ms var(--ease), stroke-width 180ms var(--ease); }
+.graph-edge.is-active line { stroke: var(--amber); stroke-width: 2; }
+.graph-edge.is-hidden { display: none; }
+.graph-panel { min-height: 100%; }
+@media (max-width: 980px) {
+  .graph-layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  .graph-mobile-note { display: block; margin: -2px 0 10px; }
+  .graph-canvas { overflow-x: auto; }
+  .graph-canvas svg { min-width: 760px; }
+}
+
 .world-cats {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));

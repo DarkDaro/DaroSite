@@ -26,6 +26,7 @@ const ROUTES = [
   "/library.html",
   "/world.html",
   "/map.html",
+  "/graph.html",
   "/characters.html",
   "/locations.html",
   "/corporations.html",
