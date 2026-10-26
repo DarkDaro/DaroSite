@@ -1984,6 +1984,10 @@ html[data-layer="2"] .seam-inline { display: inline; }
 .credit-row .meta { color: var(--fog); }
 
 .sub-actions { display: flex; flex-wrap: wrap; gap: 12px 26px; margin-top: 28px; }
+.contact-block { max-width: 760px; margin-top: 16px; padding: 20px; border: 1px solid var(--line); background: var(--ink-2); }
+.contact-block p { max-width: 62ch; }
+.contact-block .sub-actions { margin-top: 16px; }
+.contact-block .filter-toggle[disabled] { opacity: 0.5; cursor: not-allowed; }
 
 .reader-progress { position: sticky; top: var(--header-h); z-index: 35; background: var(--ink); }
 .lb-stage .book-cover { width: min(420px, 80vw); }

@@ -2698,5 +2698,11 @@ window.SITE = (function () {
     "contact": "Запросы на рукопись и права: через архив проекта."
   };
 
-  return { meta, works, parts, chapters, documents, timeline, characters, locations, corporations, implants, weapons, glossary, gallery, images, seams, world, pitch };
+  const contact = {
+    email: "",
+    telegram: "",
+    note: "Запросы на рукопись и права: через архив проекта."
+  };
+
+  return { meta, works, parts, chapters, documents, timeline, characters, locations, corporations, implants, weapons, glossary, gallery, images, seams, world, pitch, contact };
 })();

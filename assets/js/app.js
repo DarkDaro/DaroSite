@@ -171,6 +171,25 @@
     return '<article class="info-card"><h3>' + esc(title) + '</h3><p class="meta meta--plain">' + esc(text) + "</p></article>";
   }
 
+  function contactBlock(showHeading) {
+    var contact = SITE.contact || {};
+    var email = String(contact.email || "").trim();
+    var telegram = String(contact.telegram || "").trim().replace(/^@/, "");
+    var actions = [];
+    if (email) actions.push('<a class="link-arrow" href="mailto:' + esc(email) + '">Написать по email</a>');
+    if (telegram) actions.push('<a class="link-arrow" href="https://t.me/' + encodeURIComponent(telegram) + '" target="_blank" rel="noopener">Написать в Telegram</a>');
+    var heading = showHeading === false ? "" : '<p class="eyebrow">контакт для прав</p>';
+    if (!actions.length) {
+      return '<div class="contact-block">' + heading +
+        '<p>' + esc(contact.note || "Запросы на рукопись и права: через архив проекта.") + '</p>' +
+        '<div class="sub-actions"><button type="button" class="filter-toggle" disabled aria-disabled="true">Email не указан</button><button type="button" class="filter-toggle" disabled aria-disabled="true">Telegram не указан</button></div>' +
+        '<p class="meta mt-16">Кнопки станут активными, когда контакты появятся.</p></div>';
+    }
+    return '<div class="contact-block">' + heading +
+      '<p>' + esc(contact.note || "Запросы на рукопись и права.") + '</p>' +
+      '<div class="sub-actions">' + actions.join("") + '</div></div>';
+  }
+
   function voiceButton(kind, id) {
     return '<button type="button" class="filter-toggle voice-btn" data-voice-kind="' + esc(kind) + '" data-voice-id="' + esc(id) + '" aria-pressed="false" title="Экспериментальная озвучка локальным голосом браузера">Озвучить</button>';
   }
@@ -1125,7 +1144,8 @@
       '<section class="section" id="credits"><div class="wrap"><div class="section-head"><span class="num">02 / кредиты</span><h2>Изображения и лицензии</h2></div><div class="credit-list">' + credits + '</div><p class="meta mt-24">Фотографии тонированы и кадрированы для демонстрационного макета. Оригиналы доступны по ссылкам «источник».</p></div></section>' +
       '<section class="section"><div class="wrap"><div class="section-head"><span class="num">03 / техника</span><h2>Что внутри</h2></div><div class="card-grid card-grid--3"><div class="info-card"><h3>Шрифты</h3><p class="meta meta--plain">Cormorant, Literata, IBM Plex Mono. SIL Open Font License, файл assets/fonts/OFL.txt.</p></div><div class="info-card"><h3>Поиск</h3><p class="meta meta--plain">Fuse.js 7.5.0, MIT. Индекс собирается на клиенте из локального файла данных.</p></div><div class="info-card"><h3>Сборка</h3><p class="meta meta--plain">HTML, CSS и обычный JavaScript. Без сборщика и без сетевых запросов. Данные лежат в локальном файле data.js и загружаются вместе со страницей.</p></div></div></div></section>' +
       '<section class="section" id="publishers"><div class="wrap"><div class="section-head"><span class="num">04 / издателям</span><h2>Рукопись и материалы</h2></div><div class="note"><div><p class="meta">рукопись</p><p class="meta">34 из 34 глав</p><p class="meta">71 733 слова</p></div><div class="note-body"><p>Для издателей собрана отдельная страница: логлайн, короткий и полный синопсис, обзор мира, темы, аудитория и факт-лист. Её можно распечатать или сохранить в PDF из браузера.</p><div class="sub-actions"><a class="link-arrow" href="pitch.html">Открыть питч</a></div></div></div></div></section>' +
-      '<section class="section" id="sound"><div class="wrap"><div class="section-head"><span class="num">05 / звук</span><h2>Музыка, эффекты и озвучка</h2></div><div class="note"><div><p class="meta">музыка</p><p class="meta">эффекты</p><p class="meta">голос</p></div><div class="note-body"><p>Музыка включается после первого клика по странице: браузер не разрешает звук до действия пользователя. Кнопка «Звук» в шапке выключает и включает всё сразу. Выбор запоминается в браузере.</p><p>Эффекты работают на кнопках, вкладках, меню и поиске. Озвучка пока экспериментальная: кнопка «Озвучить» на главах и в досье читает текст локальным голосом браузера. Качество зависит от русского голоса Windows. Если русского голоса нет, браузер возьмёт системный.</p><p class="meta">Общая громкость музыки, эффектов и голоса.</p><div class="volume-row"><label for="sound-volume">Громкость</label><input id="sound-volume" class="volume-slider" type="range" min="0" max="100" step="1" value="' + volume + '" data-volume aria-label="Общая громкость"><output id="sound-volume-value" class="volume-value" for="sound-volume" data-volume-value>' + volume + '%</output></div><div class="sub-actions"><button class="filter-toggle" type="button" data-sound-test="music">Проверить музыку</button><button class="filter-toggle" type="button" data-sound-test="effect">Проверить эффект</button><button class="filter-toggle" type="button" data-sound-test="voice">Проверить голос</button></div></div></div></div></section>' +
+      '<section class="section" id="rights"><div class="wrap"><div class="section-head"><span class="num">05 / права</span><h2>Контакт для прав</h2></div>' + contactBlock(true) + '</div></section>' +
+      '<section class="section" id="sound"><div class="wrap"><div class="section-head"><span class="num">06 / звук</span><h2>Музыка, эффекты и озвучка</h2></div><div class="note"><div><p class="meta">музыка</p><p class="meta">эффекты</p><p class="meta">голос</p></div><div class="note-body"><p>Музыка включается после первого клика по странице: браузер не разрешает звук до действия пользователя. Кнопка «Звук» в шапке выключает и включает всё сразу. Выбор запоминается в браузере.</p><p>Эффекты работают на кнопках, вкладках, меню и поиске. Озвучка пока экспериментальная: кнопка «Озвучить» на главах и в досье читает текст локальным голосом браузера. Качество зависит от русского голоса Windows. Если русского голоса нет, браузер возьмёт системный.</p><p class="meta">Общая громкость музыки, эффектов и голоса.</p><div class="volume-row"><label for="sound-volume">Громкость</label><input id="sound-volume" class="volume-slider" type="range" min="0" max="100" step="1" value="' + volume + '" data-volume aria-label="Общая громкость"><output id="sound-volume-value" class="volume-value" for="sound-volume" data-volume-value>' + volume + '%</output></div><div class="sub-actions"><button class="filter-toggle" type="button" data-sound-test="music">Проверить музыку</button><button class="filter-toggle" type="button" data-sound-test="effect">Проверить эффект</button><button class="filter-toggle" type="button" data-sound-test="voice">Проверить голос</button></div></div></div></div></section>' +
       seamBlock(SITE.seams.about);
 
     document.title = "Илья Верес / Соляной протокол";
@@ -1167,7 +1187,7 @@
         '<div class="pitch-block"><p class="eyebrow">08 / позиционирование</p><p>' + esc(p.positioning) + '</p><p class="meta mt-16">' + esc(p.whyNow) + "</p></div>" +
         '<div class="pitch-block"><p class="eyebrow">09 / факты</p><table class="id-table pitch-facts">' + facts + "</table></div>" +
         '<div class="pitch-block"><p class="eyebrow">10 / автор</p><p>' + esc(p.authorLong) + '</p><div class="sub-actions"><a class="link-arrow" href="about.html">Об авторе</a></div></div>' +
-        '<div class="pitch-block"><p class="eyebrow">11 / контакт</p><p>' + esc(p.contact) + '</p><p class="meta mt-16">' + esc(p.rights) + "</p></div>" +
+        '<div class="pitch-block"><p class="eyebrow">11 / контакт</p>' + contactBlock(false) + '<p class="meta mt-16">' + esc(p.rights) + "</p></div>" +
         '<div class="pitch-actions pitch-actions--bottom"><button type="button" class="filter-toggle" data-print>Печать / PDF</button><a class="link-arrow" href="book.html">Открыть книгу</a><a class="link-arrow" href="world.html">Мир</a></div>' +
       "</div></section>" +
       seamBlock(SITE.seams.book);
