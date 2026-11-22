@@ -11,15 +11,17 @@
   about, pitch (питч издателям), 404.
 - assets/: art 16M, audio 1.9M, js 1.1M, css 716K, fonts (IBM Plex, OFL.txt).
 - tools/: 17 QA-скриптов (check, qa, mobile, interactions, seo, crawl…).
-- robots.txt, sitemap.xml, .nojekyll есть. CI и деплой-пайплайна нет (до 2026-11-22).
+- robots.txt, sitemap.xml, .nojekyll есть. Гейты `scripts/` и CI-воркфлоу
+  `.github/workflows/deploy.yml` — 2026-11-22.
 
 ## Деплой
 
 GitHub Pages, проектный путь `/DaroSite/`: canonical/og/sitemap — абсолютные
 URL `https://darkdaro.github.io/DaroSite/`, 404.html — корневые ссылки
 `/DaroSite/…` (правильно для 404 под проектным путём). CI:
-`.github/workflows/deploy.yml` — гейты → чистая копия в `out/` (без tools/,
-scripts/, rules/, *.md, package.json, opencode.json) → Pages.
+`.github/workflows/deploy.yml` — гейты → чистая копия в `out/` (без
+`.git*`, `.github`, tools/, scripts/, rules/, *.md, package.json,
+opencode.json) → Pages.
 
 ## Правила
 
@@ -32,3 +34,7 @@ scripts/, rules/, *.md, package.json, opencode.json) → Pages.
 - Контент полон: 34 главы, 71 733 слова (детали — README.md).
 - Гейты на входе: слоп — 0 находок на 22 файлах; ссылки — чисто после
   фикса двух системных случаев (data: URI с запятыми, `--base /DaroSite/`).
+- Правила, гейты и CI готовы локально (bd68a5a → 24adbb8); пуш заблокирован
+  — в среде нет токена: положить его в `.gt` в корне копии (уже в
+  `.git/info/exclude`), затем `git push origin main`; пункт BACKLOG
+  закрывается после зелёного CI и живой сверки прода.
