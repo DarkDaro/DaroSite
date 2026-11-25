@@ -142,7 +142,7 @@
         '<nav class="menu-nav" aria-label="Мобильная навигация">' +
           nav.map(function (item) { return '<a href="' + item.href + '">' + esc(item.label) + "<span>перейти</span></a>"; }).join("") +
         "</nav>" +
-        '<p class="meta menu-note">Второй контур: служебные пометки поверх основного текста. Включается кнопкой «Слой 2» в шапке.</p>' +
+        '<p class="meta menu-note">Второй контур: служебные пометки поверх основного текста. Страница меняет фон и подсветку, проявляются швы. Включается кнопкой «Слой 2» в шапке.</p>' +
       "</div>" +
     "</dialog>";
   }
@@ -165,6 +165,11 @@
       var topHolder = doc.createElement("div");
       topHolder.innerHTML = scrollTopHTML();
       doc.body.appendChild(topHolder.firstChild);
+    }
+    if (!doc.querySelector(".layer-badge")) {
+      var badgeHolder = doc.createElement("div");
+      badgeHolder.innerHTML = '<div class="layer-badge" aria-hidden="true"><span class="layer-badge-dot"></span>Второй контур</div>';
+      doc.body.appendChild(badgeHolder.firstChild);
     }
   }
 
@@ -457,6 +462,8 @@
   function setLayer(value) {
     var layer = value === "2" ? "2" : "1";
     doc.documentElement.dataset.layer = layer;
+    var brandSub = doc.querySelector(".brand-sub");
+    if (brandSub) brandSub.textContent = layer === "2" ? "второй контур" : "архив / роман";
     doc.querySelectorAll("[data-layer-toggle]").forEach(function (button) {
       button.setAttribute("aria-pressed", layer === "2" ? "true" : "false");
       var label = button.querySelector(".layer-label");
