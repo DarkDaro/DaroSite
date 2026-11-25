@@ -1244,7 +1244,30 @@
     }
 
     main.innerHTML = body + seamBlock(item.seam);
-    document.title = item.name + " / Соляной протокол";
+    var dossierTitle = item.name + " / Соляной протокол";
+    var dossierUrl = "https://darkdaro.github.io/DaroSite/dossier.html?id=" + item.id;
+    var dossierDescription = String(item.summary || (item.bio && item.bio[0]) || SITE.meta.logline || "").replace(/\s+/g, " ").trim().slice(0, 220);
+    document.title = dossierTitle;
+    var canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.setAttribute("href", dossierUrl);
+    [["property", "og:url", dossierUrl], ["property", "og:title", dossierTitle], ["property", "og:description", dossierDescription], ["name", "twitter:title", dossierTitle], ["name", "twitter:description", dossierDescription]].forEach(function (tag) {
+      var node = document.querySelector("meta[" + tag[0] + '="' + tag[1] + '"]');
+      if (node) node.setAttribute("content", tag[2]);
+    });
+    var oldSchema = document.getElementById("dossier-schema");
+    if (oldSchema) oldSchema.remove();
+    var dossierSchema = document.createElement("script");
+    dossierSchema.type = "application/ld+json";
+    dossierSchema.id = "dossier-schema";
+    dossierSchema.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: dossierTitle,
+      description: dossierDescription,
+      url: dossierUrl,
+      inLanguage: "ru"
+    });
+    document.head.appendChild(dossierSchema);
   }
 
   function dossierHead(title, eyebrow, aliases, visual, meta) {
