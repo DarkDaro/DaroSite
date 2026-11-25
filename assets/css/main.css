@@ -1419,12 +1419,27 @@ table.data tr:hover td { background: rgba(237, 231, 218, 0.025); }
 .gallery-item figcaption {
   margin-top: 8px;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 12px;
   align-items: baseline;
 }
 .gallery-item figcaption .g-title { font-family: var(--display); font-size: 20px; line-height: 1.1; }
 .gallery-item figcaption .g-meta { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fog-dark); text-align: right; }
+
+/* Служебные связи пластины: только во втором контуре */
+
+.gallery-item figcaption .g-service {
+  display: none;
+  flex-basis: 100%;
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
+html[data-layer="2"] .gallery-item figcaption .g-service { display: block; }
+
+.gallery-item figcaption .g-service .seam-inline { margin-right: 14px; }
 
 .lightbox {
   width: min(1180px, calc(100vw - 28px));

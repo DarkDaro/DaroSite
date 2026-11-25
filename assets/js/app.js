@@ -233,7 +233,11 @@
       : U.img(item.img, { alt: item.title, focus: item.focus, sizes: options.sizes || "(max-width: 680px) 100vw, (max-width: 1100px) 50vw, 40vw" });
     var button = '<button class="plate ' + (item.cover ? "cover-plate" : ratio) + '" type="button" data-lightbox="' + item.id + '" aria-label="Открыть пластину: ' + esc(item.title) + '">' + inner + "</button>";
     var link = options.link ? '<a class="plate ' + (item.cover ? "cover-plate" : ratio) + '" href="' + options.link + '" aria-label="' + esc(item.title) + '">' + inner + "</a>" : button;
-    return '<figure class="gallery-item span-' + item.span + '">' + link + '<figcaption><span class="g-title">' + esc(item.title) + '</span><span class="g-meta">' + esc(item.note) + "</span></figcaption></figure>";
+    var service = [];
+    if (item.chapter) service.push('<a class="seam-inline" href="' + U.chapterUrl(item.chapter) + '">глава ' + item.chapter + "</a>");
+    var found = findEntity(item.entity);
+    if (found) service.push('<a class="seam-inline" href="' + U.dossierUrl(item.entity) + '">досье: ' + esc(found.item.name) + "</a>");
+    return '<figure class="gallery-item span-' + item.span + '">' + link + '<figcaption><span class="g-title">' + esc(item.title) + '</span><span class="g-meta">' + esc(item.note) + "</span>" + (service.length ? '<span class="g-service">' + service.join("") + "</span>" : "") + "</figcaption></figure>";
   }
 
   function chapterNotes(chapter) {
