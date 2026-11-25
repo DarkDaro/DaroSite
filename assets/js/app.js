@@ -1263,17 +1263,22 @@
     });
     var oldSchema = document.getElementById("dossier-schema");
     if (oldSchema) oldSchema.remove();
-    var dossierSchema = document.createElement("script");
-    dossierSchema.type = "application/ld+json";
-    dossierSchema.id = "dossier-schema";
-    dossierSchema.textContent = JSON.stringify({
+    var schemaTypes = { character: "Person", location: "Place", corporation: "Organization", implant: "Product", weapon: "Product" };
+    var schemaBody = {
       "@context": "https://schema.org",
-      "@type": "WebPage",
-      name: dossierTitle,
+      "@type": schemaTypes[kind] || "WebPage",
+      name: item.name,
       description: dossierDescription,
       url: dossierUrl,
       inLanguage: "ru"
-    });
+    };
+    if (kind === "character" && item.role) schemaBody.jobTitle = item.role;
+    if (kind === "corporation" && item.motto) schemaBody.slogan = item.motto;
+    if ((kind === "implant" || kind === "weapon") && item.maker) schemaBody.brand = { "@type": "Brand", name: item.maker };
+    var dossierSchema = document.createElement("script");
+    dossierSchema.type = "application/ld+json";
+    dossierSchema.id = "dossier-schema";
+    dossierSchema.textContent = JSON.stringify(schemaBody);
     document.head.appendChild(dossierSchema);
   }
 
