@@ -23,7 +23,9 @@ SESSIONS, BACKLOG, TECH-DEBT и AGENTS.
   corporations, implants, weapons, locations, map, graph, dossier, gallery,
   about, pitch (питч издателям), 404.
 - assets/: art 16M, audio 1.9M, js 1.1M, css 716K, fonts (IBM Plex, OFL.txt).
-- tools/: 17 QA-скриптов (check, qa, mobile, interactions, seo, crawl…).
+- tools/: 18 QA-скриптов (check, qa, mobile, interactions, seo, crawl…).
+  Чистка иероглифов и мусорных символов: `tools/clean-chars.mjs`,
+  запуск `npm run clean` (отчёт), `npm run clean -- --fix` (чистка).
 - robots.txt, sitemap.xml, .nojekyll есть. Гейты `scripts/` и CI-воркфлоу
   `.github/workflows/deploy.yml` — 2026-11-22.
 
