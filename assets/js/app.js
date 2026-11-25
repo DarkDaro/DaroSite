@@ -1432,7 +1432,7 @@
         '<div class="map-layout"><div class="map-canvas" tabindex="0" aria-label="Схема города, можно прокручивать по горизонтали">' + svg + '</div><aside class="map-panel" id="map-panel" aria-live="polite"></aside></div>' +
         '<div class="map-list" aria-label="Локации на карте">' + list + '</div>' +
         '<p class="meta mt-24">Схема не в масштабе. <a class="link-quiet" href="locations.html">Все локации</a></p>' +
-      '</div></section>';
+      '</div></section>' + seamBlock(SITE.seams.map);
 
     var panel = document.getElementById("map-panel");
     var nodes = Array.prototype.slice.call(main.querySelectorAll("[data-map-id]"));
@@ -1556,7 +1556,7 @@
         '<p class="meta graph-mobile-note">Граф можно листать по горизонтали.</p>' +
         '<div class="graph-layout"><div class="graph-canvas" tabindex="0" aria-label="Граф связей, можно прокручивать по горизонтали">' + svg + '</div><aside class="map-panel graph-panel" id="graph-panel" aria-live="polite"></aside></div>' +
         '<p class="meta mt-24">Связи взяты из досье. <a class="link-quiet" href="characters.html">Все персонажи</a></p>' +
-      '</div></section>';
+      '</div></section>' + seamBlock(SITE.seams.graph);
 
     var panel = document.getElementById("graph-panel");
     var nodeElements = Array.prototype.slice.call(main.querySelectorAll("[data-graph-id]"));
