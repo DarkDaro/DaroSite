@@ -462,6 +462,9 @@
     var beats = chapter.beats && chapter.beats.length
       ? '<div class="stub-beats"><p class="eyebrow">фабула</p><ol class="beats">' + chapter.beats.map(function (beat) { return "<li><p>" + esc(beat) + "</p></li>"; }).join("") + "</ol></div>"
       : "";
+    var beatsItems = chapter.beats && chapter.beats.length
+      ? chapter.beats.map(function (beat) { return "<li><p>" + esc(beat) + "</p></li>"; }).join("")
+      : "";
     var body = full
       ? '<div class="reader-text" id="reader-text">' + paragraphs(text) + "</div>"
       : '<div class="empty"><h3>Глава в работе</h3><p>' + esc(chapter.synopsis || "Синопсис пока не написан.") + "</p>" + beats + '<p class="meta mt-16">Полный текст доступен для глав 1-' + latest + '. Остальные главы открыты как фабулы с опорными точками сюжета.</p><div class="actions"><a class="link-arrow" href="chapter.html?n=1">Глава 1</a><a class="link-arrow" href="chapter.html?n=' + latest + '">Глава ' + latest + '</a><a class="link-arrow" href="book.html#contents">К содержанию</a></div></div>';
@@ -473,7 +476,7 @@
       '<div class="toolbar-spacer"></div><a class="link-quiet" href="book.html#contents">К содержанию</a></div>' +
       '</div><div class="reader-progress" aria-hidden="true"><span id="reader-progress-bar"></span></div>' +
       '<div class="wrap reader-layout"><div>' + body + '<nav class="reader-nav">' + (prev ? '<a class="link-arrow" href="' + U.chapterUrl(prev.n) + '">' + pad(prev.n) + " / " + esc(prev.title) + "</a>" : "<span></span>") + (next ? '<a class="link-arrow" href="' + U.chapterUrl(next.n) + '">' + pad(next.n) + " / " + esc(next.title) + "</a>" : "<span></span>") + "</nav></div>" +
-      '<aside class="reader-notes"><p class="eyebrow">пометки</p>' + (notes.length ? notes.map(function (note) { return '<div class="note-item"><span class="note-no">' + esc(note.type) + '</span><p><a class="link" href="' + note.href + '">' + esc(note.title) + "</a></p></div>"; }).join("") : '<p class="meta mt-16">К этой главе нет отдельных пометок.</p>') + '<p class="seam">' + esc(chapter.seam || SITE.seams.book) + "</p></aside></div>" +
+      '<aside class="reader-notes"><p class="eyebrow">пометки</p>' + (notes.length ? notes.map(function (note) { return '<div class="note-item"><span class="note-no">' + esc(note.type) + '</span><p><a class="link" href="' + note.href + '">' + esc(note.title) + "</a></p></div>"; }).join("") : '<p class="meta mt-16">К этой главе нет отдельных пометок.</p>') + (beatsItems ? '<div class="reader-beats"><p class="eyebrow">фабула</p><ol class="beats">' + beatsItems + "</ol></div>" : "") + '<p class="seam">' + esc(chapter.seam || SITE.seams.book) + "</p></aside></div>" +
       seamBlock(SITE.seams.book);
 
     var chapterTitle = "Глава " + chapter.n + ". " + chapter.title + " / Соляной протокол";

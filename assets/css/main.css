@@ -3738,6 +3738,15 @@ body::after {
   color: var(--bone-dim);
 }
 
+/* Фабула главы в читалке: только во втором контуре */
+
+.reader-beats {
+  display: none;
+  margin-top: 22px;
+}
+
+html[data-layer="2"] .reader-beats { display: block; }
+
 @media (max-width: 900px) {
   .document-grid { grid-template-columns: 1fr; }
   .timeline-item { grid-template-columns: 1fr; gap: 8px; }
