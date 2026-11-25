@@ -8,6 +8,7 @@
   },
   "scripts": {
     "serve": "node tools/serve.mjs",
+    "clean": "node tools/clean-chars.mjs",
     "quick": "node tools/check.mjs && node tools/quick.mjs",
     "check": "node tools/check.mjs",
     "content": "node tools/content.mjs",
