@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(here, "..");
 const BASE = "https://darkdaro.github.io/DaroSite/";
-const TODAY = "2026-10-26";
+const TODAY = new Date().toISOString().slice(0, 10);
 const IMAGE = BASE + "assets/art/dam-fog-1280.webp";
 const IMAGE_WIDTH = 1280;
 const IMAGE_HEIGHT = 853;
@@ -135,6 +135,7 @@ for (const file of pageFiles) {
   let next;
   if (startAt >= 0 && endAt > startAt) {
     next = html.slice(0, startAt) + block.slice(1) + html.slice(endAt + end.length);
+    next = next.replace(/\n\s*\n\s*(<\/head>)/, "\n$1");
   } else {
     next = html.replace("</head>", block + "</head>");
   }
